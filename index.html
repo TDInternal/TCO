@@ -5,6 +5,21 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Modern Cost Comparison Calculator</title>
     <style>
+        :root {
+            --td-blue: #00aeef;
+            --td-green: #8dc73f;
+            --td-orange: #f57922;
+            --td-yellow: #ffcf03;
+            --td-teal: #019c96;
+            --td-red: #ee4124;
+            --td-purple: #7f3f98;
+            --td-maroon: #71002a;
+            --text-dark: #1e293b;
+            --text-light: #f8fafc;
+            --bg-light: #f1f5f9;
+            --border-light: #e2e8f0;
+        }
+
         * {
             margin: 0;
             padding: 0;
@@ -13,7 +28,7 @@
 
         body {
             font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: var(--bg-light);
             min-height: 100vh;
             padding: 20px;
         }
@@ -24,9 +39,10 @@
             background: rgba(255, 255, 255, 0.95);
             backdrop-filter: blur(20px);
             border-radius: 24px;
-            box-shadow: 0 32px 64px rgba(0, 0, 0, 0.15);
+            box-shadow: 0 32px 64px rgba(0, 0, 0, 0.1);
             overflow: hidden;
             animation: slideUp 0.8s ease-out;
+            border: 1px solid var(--border-light);
         }
 
         @keyframes slideUp {
@@ -35,7 +51,7 @@
         }
 
         .header {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: var(--td-blue);
             color: white;
             padding: 40px;
             text-align: center;
@@ -45,7 +61,7 @@
             font-size: 2.5rem;
             font-weight: 700;
             margin-bottom: 8px;
-            text-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+            text-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
         }
 
         .header p {
@@ -60,12 +76,11 @@
 
         .controls {
             background: rgba(248, 250, 252, 0.8);
-            backdrop-filter: blur(10px);
             border-radius: 20px;
             padding: 32px;
             margin-bottom: 32px;
-            border: 1px solid rgba(255, 255, 255, 0.2);
-            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.08);
+            border: 1px solid var(--border-light);
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.05);
         }
 
         .control-section {
@@ -74,24 +89,17 @@
             padding: 24px;
             margin-bottom: 24px;
             box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
-            border: 1px solid rgba(226, 232, 240, 0.8);
+            border: 1px solid var(--border-light);
             transition: all 0.3s ease;
         }
-
-        .control-section:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 8px 30px rgba(0, 0, 0, 0.1);
-        }
-
+        
         .control-section h4 {
             font-size: 1.25rem;
             font-weight: 600;
-            color: #1e293b;
+            color: var(--text-dark);
             margin-bottom: 20px;
             padding-bottom: 12px;
-            border-bottom: 3px solid;
-            border-image: linear-gradient(90deg, #667eea, #764ba2) 1;
-            position: relative;
+            border-bottom: 3px solid var(--td-blue);
         }
 
         .control-group {
@@ -99,11 +107,6 @@
             align-items: center;
             margin-bottom: 20px;
             gap: 20px;
-            transition: all 0.2s ease;
-        }
-
-        .control-group:hover {
-            transform: translateX(4px);
         }
 
         .control-group label {
@@ -113,360 +116,245 @@
             font-size: 0.95rem;
         }
 
+        /* Remove arrows from number inputs */
+        input::-webkit-outer-spin-button,
+        input::-webkit-inner-spin-button {
+          -webkit-appearance: none;
+          margin: 0;
+        }
+        input[type=number] {
+          -moz-appearance: textfield;
+        }
+
         .control-group input {
             padding: 12px 16px;
-            border: 2px solid #e2e8f0;
+            border: 2px solid var(--border-light);
             border-radius: 12px;
             width: 140px;
             font-size: 14px;
             font-weight: 500;
             transition: all 0.3s ease;
             background: white;
-            -webkit-appearance: none;
-            -moz-appearance: textfield;
-            appearance: none;
-        }
-
-        .control-group input::-webkit-outer-spin-button,
-        .control-group input::-webkit-inner-spin-button {
-            -webkit-appearance: none;
-            margin: 0;
-        }
-
-        .control-group input[type=number] {
-            -moz-appearance: textfield;
         }
 
         .control-group input:focus {
             outline: none;
-            border-color: #667eea;
-            box-shadow: 0 0 0 4px rgba(102, 126, 234, 0.1);
-            transform: scale(1.02);
+            border-color: var(--td-blue);
+            box-shadow: 0 0 0 4px rgba(0, 174, 239, 0.15);
         }
 
-        .control-group input:read-only {
-            background: linear-gradient(135deg, #f8fafc, #f1f5f9);
+        .control-group input:read-only,
+        .control-group input:disabled {
+            background-color: var(--bg-light);
             color: #64748b;
-            border-color: #e2e8f0;
+            cursor: not-allowed;
         }
-
-        .checkbox-group {
+        
+        /* Custom Checkbox styles */
+        .checkbox-group { display: flex; align-items: center; gap: 12px; }
+        .custom-checkbox-container {
             display: flex;
             align-items: center;
+            cursor: pointer;
             gap: 12px;
+            min-width: auto;
+        }
+        .checkbox-group input[type="checkbox"] {
+            display: none;
+        }
+        .checkmark {
+            position: relative;
+            height: 20px;
+            width: 20px;
+            background-color: #eee;
+            border: 2px solid var(--border-light);
+            border-radius: 4px;
+            transition: all 0.2s;
+        }
+        .custom-checkbox-container:hover .checkmark {
+            background-color: #ccc;
+        }
+        input[type="checkbox"]:checked + .checkmark {
+            background-color: var(--td-blue);
+            border-color: var(--td-blue);
+        }
+        .checkmark:after {
+            content: "";
+            position: absolute;
+            display: none;
+        }
+        input[type="checkbox"]:checked + .checkmark:after {
+            display: block;
+        }
+        .checkmark:after {
+            left: 6px;
+            top: 2px;
+            width: 5px;
+            height: 10px;
+            border: solid white;
+            border-width: 0 3px 3px 0;
+            transform: rotate(45deg);
         }
 
-        .checkbox-group input[type="checkbox"] {
-            width: 20px;
-            height: 20px;
-            accent-color: #667eea;
-            cursor: pointer;
-        }
 
         .preset-section {
-            text-align: center;
-            margin: 32px 0;
-            padding: 24px;
-            background: linear-gradient(135deg, rgba(102, 126, 234, 0.1), rgba(118, 75, 162, 0.1));
-            border-radius: 16px;
-            border: 1px solid rgba(102, 126, 234, 0.2);
+            text-align: center; margin: 32px 0; padding: 24px;
+            background: #f7f9fc; border-radius: 16px;
+            border: 1px solid var(--border-light);
         }
 
-        .preset-section h3 {
-            font-size: 1.2rem;
-            font-weight: 600;
-            margin-bottom: 16px;
-            color: #1e293b;
+        .preset-section h3 { font-size: 1.2rem; font-weight: 600; margin-bottom: 16px; color: var(--text-dark); }
+
+        .preset-btn {
+            background: var(--td-blue);
+            color: white; border: none; padding: 14px 28px; margin: 8px; border-radius: 12px;
+            cursor: pointer; font-size: 14px; font-weight: 600; transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(0, 174, 239, 0.2);
         }
 
-        .preset-btn, .export-btn {
-            background: linear-gradient(135deg, #667eea, #764ba2);
-            color: white;
-            border: none;
-            padding: 14px 28px;
-            margin: 8px;
-            border-radius: 12px;
-            cursor: pointer;
-            font-size: 14px;
-            font-weight: 600;
-            transition: all 0.3s ease;
-            box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);
-        }
-
-        .preset-btn:hover, .export-btn:hover {
+        .preset-btn:hover {
             transform: translateY(-2px);
-            box-shadow: 0 8px 25px rgba(102, 126, 234, 0.4);
+            box-shadow: 0 8px 25px rgba(0, 174, 239, 0.3);
         }
 
-        .preset-btn.secondary {
-            background: linear-gradient(135deg, #64748b, #475569);
-            box-shadow: 0 4px 15px rgba(100, 116, 139, 0.3);
-        }
-
-        .preset-btn.secondary:hover {
-            box-shadow: 0 8px 25px rgba(100, 116, 139, 0.4);
-        }
+        .preset-btn.secondary { background: #475569; box-shadow: 0 4px 15px rgba(100, 116, 139, 0.2); }
+        .preset-btn.secondary:hover { box-shadow: 0 8px 25px rgba(100, 116, 139, 0.3); }
 
         .table-container {
-            background: white;
-            border-radius: 20px;
-            overflow: hidden;
+            background: white; border-radius: 20px; overflow: hidden;
             box-shadow: 0 8px 32px rgba(0, 0, 0, 0.08);
-            border: 1px solid rgba(226, 232, 240, 0.8);
+            border: 1px solid var(--border-light);
             margin-bottom: 32px;
         }
 
-        table {
-            width: 100%;
-            border-collapse: collapse;
-        }
+        table { width: 100%; border-collapse: collapse; }
 
         th {
-            background: linear-gradient(135deg, #1e293b, #374151);
-            color: white;
-            padding: 20px 16px;
-            text-align: left;
-            font-size: 14px;
-            font-weight: 600;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
+            background: var(--text-dark); color: white;
+            padding: 18px 16px; text-align: left; font-size: 14px;
+            font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px;
         }
 
         td {
-            padding: 16px;
-            border-bottom: 1px solid #f1f5f9;
-            font-size: 14px;
-            transition: background-color 0.2s ease;
+            padding: 14px 16px; border-bottom: 1px solid var(--border-light);
+            font-size: 14px; transition: background-color 0.2s ease;
         }
 
-        tr:hover td {
-            background-color: #f8fafc;
-        }
-
-        .category-header {
-            background: linear-gradient(135deg, #f1f5f9, #e2e8f0) !important;
-        }
+        tr:last-child td { border-bottom: none; }
+        tr:hover td { background-color: #f8fafc; }
 
         .category-header td {
-            font-weight: 700;
-            color: #1e293b;
-            border-bottom: 2px solid #e2e8f0;
-            font-size: 15px;
-        }
-
-        .total-row {
-            background: linear-gradient(135deg, #dbeafe, #bfdbfe) !important;
+            font-weight: 700; color: var(--text-dark); border-bottom: 2px solid var(--border-light);
+            font-size: 15px; background-color: var(--bg-light) !important;
         }
 
         .total-row td {
-            font-weight: 600;
-            color: #1e40af;
-            border-bottom: 2px solid #93c5fd;
+            font-weight: 600; color: var(--td-blue); background-color: rgba(0, 174, 239, 0.05) !important;
+            border-top: 1px solid rgba(0, 174, 239, 0.2);
+            border-bottom: 1px solid rgba(0, 174, 239, 0.2);
         }
-
-        .grand-total {
-            background: linear-gradient(135deg, #667eea, #764ba2) !important;
-        }
-
+        
         .grand-total td {
-            color: white !important;
+            background: var(--td-blue) !important; color: white !important;
+            font-weight: 700; font-size: 16px;
+        }
+
+        .price { text-align: right; font-family: 'Inter', sans-serif; font-weight: 600; }
+
+        .sources-column { font-size: 12px; color: #64748b; max-width: 200px; line-height: 1.4; }
+        .link-style { color: var(--td-blue); text-decoration: none; font-weight: 500; }
+        .link-style:hover { text-decoration: underline; }
+        
+        .summary-title {
+            font-size: 1.75rem;
             font-weight: 700;
-            font-size: 16px;
-            border-bottom: none;
+            color: var(--text-dark);
+            text-align: center;
+            margin-bottom: 24px;
+            padding-bottom: 12px;
+            border-bottom: 3px solid var(--td-blue);
         }
 
-        .price {
-            text-align: right;
-            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-            font-weight: 600;
-        }
-
-        .sources-column {
-            font-size: 12px;
-            color: #64748b;
-            max-width: 200px;
-            line-height: 1.4;
-        }
-
-        .link-style {
-            color: #667eea;
-            text-decoration: none;
-            font-weight: 500;
-            transition: color 0.2s ease;
-        }
-
-        .link-style:hover {
-            color: #764ba2;
-            text-decoration: underline;
-        }
-
-        .summary-grid {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 24px;
-            margin-top: 32px;
-        }
-
+        .summary-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 24px; margin-top: 32px; }
         .summary-box {
-            background: white;
-            border-radius: 20px;
-            padding: 32px;
-            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.08);
-            border: 1px solid rgba(226, 232, 240, 0.8);
-            transition: all 0.3s ease;
+            background: white; border-radius: 20px; padding: 32px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.08); border: 1px solid var(--border-light);
         }
-
-        .summary-box:hover {
-            transform: translateY(-4px);
-            box-shadow: 0 16px 40px rgba(0, 0, 0, 0.12);
-        }
-
-        .summary-box h3 {
-            font-size: 1.5rem;
-            font-weight: 700;
-            color: #1e293b;
-            margin-bottom: 24px;
-            text-align: center;
-        }
-
-        .summary-stats {
-            display: grid;
-            grid-template-columns: repeat(3, 1fr);
-            gap: 16px;
-            margin-bottom: 24px;
-        }
-
+        .summary-box h3 { font-size: 1.5rem; font-weight: 700; color: var(--text-dark); margin-bottom: 24px; text-align: center; }
+        .summary-stats { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; margin-bottom: 24px; }
+        
         .stat-box {
-            background: linear-gradient(135deg, #f8fafc, #f1f5f9);
-            padding: 20px;
-            border-radius: 16px;
-            text-align: center;
-            border: 2px solid #e2e8f0;
-            transition: all 0.3s ease;
-        }
-
-        .stat-box:hover {
-            transform: translateY(-2px);
-            border-color: #667eea;
-            box-shadow: 0 8px 20px rgba(102, 126, 234, 0.15);
+            background: var(--bg-light); padding: 20px; border-radius: 16px; text-align: center;
+            border: 2px solid var(--border-light);
         }
 
         .stat-value {
-            font-size: 1.8rem;
-            font-weight: 800;
-            background: linear-gradient(135deg, #667eea, #764ba2);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
+            font-size: 1.8rem; font-weight: 800; color: var(--td-blue);
             margin-bottom: 4px;
         }
 
-        .stat-label {
-            font-size: 12px;
-            color: #64748b;
-            font-weight: 500;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-        }
+        .stat-label { font-size: 12px; color: #64748b; font-weight: 500; text-transform: uppercase; }
 
         .summary-percentage {
-            text-align: center;
-            font-size: 1.2rem;
-            font-weight: 600;
-            padding: 16px;
-            border-radius: 12px;
-            background: linear-gradient(135deg, rgba(102, 126, 234, 0.1), rgba(118, 75, 162, 0.1));
-            border: 1px solid rgba(102, 126, 234, 0.2);
+            text-align: center; font-size: 1.2rem; font-weight: 600; padding: 16px;
+            border-radius: 12px; border: 1px solid rgba(0,0,0,0.1);
         }
+        
+        .summary-percentage.savings { background-color: rgba(141, 199, 63, 0.1); color: #5a7e29; }
+        .summary-percentage.cost { background-color: rgba(238, 65, 36, 0.1); color: var(--td-red); }
+        .summary-percentage.neutral { background-color: var(--bg-light); color: #64748b; }
+
+        #summary-table td:first-child {
+             border-left: 5px solid;
+             font-weight: 600;
+        }
+
+        #summary-row-1 td:first-child { border-left-color: var(--td-green); }
+        #summary-row-2 td:first-child { border-left-color: var(--td-orange); }
+        #summary-row-3 td:first-child { border-left-color: var(--td-red); }
+        #summary-row-4 td:first-child { border-left-color: var(--td-purple); }
+        #summary-fte-row td:first-child { border-left-color: var(--td-maroon); }
+
 
         .loading-spinner {
-            display: none;
-            width: 24px;
-            height: 24px;
-            border: 3px solid #f1f5f9;
-            border-top: 3px solid #667eea;
-            border-radius: 50%;
-            animation: spin 1s linear infinite;
-            margin: 20px auto;
+            display: none; width: 24px; height: 24px;
+            border: 3px solid var(--border-light); border-top: 3px solid var(--td-blue);
+            border-radius: 50%; animation: spin 1s linear infinite; margin: 20px auto;
         }
-
-        @keyframes spin {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
-        }
-
-        .fade-in {
-            animation: fadeIn 0.5s ease-in;
-        }
-
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(10px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
+        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+        .fade-in { animation: fadeIn 0.5s ease-in; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
 
         @media (max-width: 768px) {
-            .container {
-                margin: 10px;
-                border-radius: 16px;
-            }
-            
-            .header {
-                padding: 24px;
-            }
-            
-            .header h1 {
-                font-size: 2rem;
-            }
-            
-            .main-content {
-                padding: 24px;
-            }
-            
-            .control-group {
-                flex-direction: column;
-                align-items: stretch;
-                gap: 8px;
-            }
-            
-            .control-group label {
-                min-width: auto;
-            }
-            
-            .control-group input {
-                width: 100%;
-            }
-            
-            .summary-grid {
-                grid-template-columns: 1fr;
-            }
-            
-            .summary-stats {
-                grid-template-columns: 1fr;
-            }
+            .container { margin: 10px; border-radius: 16px; }
+            .header { padding: 24px; }
+            .header h1 { font-size: 2rem; }
+            .main-content { padding: 20px; }
+            .control-group { flex-direction: column; align-items: stretch; gap: 8px; }
+            .control-group label, .custom-checkbox-container { min-width: auto; }
+            .control-group input { width: 100%; }
+            .summary-grid { grid-template-columns: 1fr; }
+            .summary-stats { grid-template-columns: 1fr; }
         }
 
         .floating-action {
-            position: fixed;
-            bottom: 24px;
-            right: 24px;
-            background: linear-gradient(135deg, #667eea, #764ba2);
-            color: white;
-            border: none;
-            border-radius: 50%;
-            width: 60px;
-            height: 60px;
-            cursor: pointer;
-            box-shadow: 0 8px 25px rgba(102, 126, 234, 0.4);
-            transition: all 0.3s ease;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 24px;
+            position: fixed; bottom: 24px; right: 24px;
+            background: var(--td-blue); color: white; border: none; border-radius: 50%;
+            width: 60px; height: 60px; cursor: pointer;
+            box-shadow: 0 8px 25px rgba(0, 174, 239, 0.4);
+            transition: all 0.3s ease; display: flex; align-items: center; justify-content: center; font-size: 24px;
         }
+        .floating-action:hover { transform: scale(1.1); box-shadow: 0 12px 35px rgba(0, 174, 239, 0.5); }
 
-        .floating-action:hover {
-            transform: scale(1.1);
-            box-shadow: 0 12px 35px rgba(102, 126, 234, 0.5);
+        @media print {
+            body { background: none; padding: 0; }
+            .container { box-shadow: none; border-radius: 0; backdrop-filter: none; max-width: 100%; margin: 0; }
+            .header, .controls, .floating-action { display: none; }
+            .main-content { padding: 0; }
+            .summary-box, .table-container { box-shadow: none; border: 1px solid #ccc; page-break-inside: avoid; }
+            .summary-grid { grid-template-columns: 1fr; }
+            .table-container { margin-bottom: 20px;}
+            h2.summary-title { margin-top: 30px; }
         }
     </style>
 </head>
@@ -482,7 +370,7 @@
                 <div class="control-section">
                     <h4>🚀 Terra Dotta Solution Costs</h4>
                     <div class="control-group">
-                        <label>Terra Dotta Software License (Year 1):</label>
+                        <label for="td-software">Terra Dotta Software License (Year 1):</label>
                         <input type="number" id="td-software" value="" placeholder="Enter amount" oninput="updateTable()">
                     </div>
                     <div class="control-group">
@@ -490,7 +378,7 @@
                         <a href="https://terradotta-my.sharepoint.com/:x:/r/personal/george_hogan_terradotta_com/_layouts/15/Doc.aspx?sourcedoc=%7B0BDD0173-4CB1-4711-BF37-A86CB0C71E32%7D&file=Pricing%20&%20Calculator.xlsx=&action=default&mobileredirect=true" target="_blank" class="link-style">📊 Terra Dotta Pricing Matrix</a>
                     </div>
                     <div class="control-group">
-                        <label>Terra Dotta Implementation Services (Year 1):</label>
+                        <label for="td-implementation">Terra Dotta Implementation Services (Year 1):</label>
                         <input type="number" id="td-implementation" value="" placeholder="Enter amount" oninput="updateTable()">
                     </div>
                 </div>
@@ -504,7 +392,7 @@
                 <div class="control-section">
                     <h4>📦 Sunapsis Software Licensing Costs</h4>
                     <div class="control-group">
-                        <label>ISSS License:</label>
+                        <label for="isss-license">ISSS License:</label>
                         <input type="number" id="isss-license" value="" placeholder="Enter amount" oninput="updateTable()">
                     </div>
                     <div class="control-group">
@@ -512,30 +400,33 @@
                         <a href="https://sunapsis.iu.edu/pricing.html" target="_blank" class="link-style">📋 Sunapsis Pricing Matrix</a>
                     </div>
                     <div class="control-group">
-                        <label>ISSS Implementation Cost:</label>
+                        <label for="isss-implementation">ISSS Implementation Cost:</label>
                         <input type="text" id="isss-implementation" value="$8,100" readonly>
                     </div>
                     <div class="control-group checkbox-group">
-                        <label style="display: flex; align-items: center; gap: 12px;">
-                            <input type="checkbox" id="dedicated-it-checkbox" onchange="updateTable()">
-                            👨‍💻 Dedicated IT FTE for Sunapsis:
-                        </label>
-                        <input type="number" id="dedicated-it-cost" value="72000" placeholder="72000" oninput="updateTable()">
+                        <div style="min-width: 280px;">
+                             <label class="custom-checkbox-container">
+                                 <input type="checkbox" id="dedicated-it-checkbox" onchange="updateTable()">
+                                 <span class="checkmark"></span>
+                                 <span>👨‍💻 Dedicated IT FTE for Sunapsis:</span>
+                             </label>
+                        </div>
+                        <input type="number" id="dedicated-it-cost" value="72000" placeholder="72000" oninput="updateTable()" disabled>
                     </div>
                     <div class="control-group">
-                        <label>🖥️ Windows Server License:</label>
+                        <label for="windows-license">🖥️ Windows Server License:</label>
                         <input type="text" id="windows-license" value="$1,150" readonly>
                     </div>
                     <div class="control-group">
-                        <label>⚙️ ColdFusion Server License:</label>
+                        <label for="coldfusion-license">⚙️ ColdFusion Server License:</label>
                         <input type="text" id="coldfusion-license" value="$2,930" readonly>
                     </div>
                     <div class="control-group">
-                        <label>🗄️ SQL Server Enterprise License:</label>
+                        <label for="sql-license">🗄️ SQL Server Enterprise License:</label>
                         <input type="text" id="sql-license" value="$28,000" readonly>
                     </div>
                     <div class="control-group">
-                        <label>🔒 SSL Certificates:</label>
+                        <label for="ssl-license">🔒 SSL Certificates:</label>
                         <input type="text" id="ssl-license" value="$500" readonly>
                     </div>
                 </div>
@@ -543,19 +434,19 @@
                 <div class="control-section">
                     <h4>🔧 Sunapsis Implementation & Support Costs</h4>
                     <div class="control-group">
-                        <label>🎯 Support Services:</label>
+                        <label for="support-services">🎯 Support Services:</label>
                         <input type="text" id="support-services" value="$7,500" readonly>
                     </div>
                     <div class="control-group">
-                        <label>🔗 Integration Services:</label>
+                        <label for="integration">🔗 Integration Services:</label>
                         <input type="text" id="integration" value="$8,400" readonly>
                     </div>
                     <div class="control-group">
-                        <label>📁 Legacy Data Migration:</label>
+                        <label for="migration">📁 Legacy Data Migration:</label>
                         <input type="text" id="migration" value="$2,800" readonly>
                     </div>
                     <div class="control-group">
-                        <label>⚙️ System Administration (25% FTE):</label>
+                        <label for="admin">⚙️ System Administration (25% FTE):</label>
                         <input type="text" id="admin" value="$18,200" readonly>
                     </div>
                 </div>
@@ -563,19 +454,19 @@
                 <div class="control-section">
                     <h4>🖥️ Sunapsis Hardware Infrastructure</h4>
                     <div class="control-group">
-                        <label>🚀 Application Server - Production:</label>
+                        <label for="app-server-prod">🚀 Application Server - Production:</label>
                         <input type="text" id="app-server-prod" value="$2,000" readonly>
                     </div>
                     <div class="control-group">
-                        <label>🧪 Application Server - Test:</label>
+                        <label for="app-server-test">🧪 Application Server - Test:</label>
                         <input type="text" id="app-server-test" value="$2,000" readonly>
                     </div>
                     <div class="control-group">
-                        <label>🗄️ Database Server:</label>
+                        <label for="db-server">🗄️ Database Server:</label>
                         <input type="text" id="db-server" value="$2,000" readonly>
                     </div>
                     <div class="control-group">
-                        <label>💾 File Storage:</label>
+                        <label for="file-storage">💾 File Storage:</label>
                         <input type="text" id="file-storage" value="$1,250" readonly>
                     </div>
                 </div>
@@ -598,6 +489,27 @@
                     </tbody>
                 </table>
             </div>
+
+            <div id="summary-section" class="fade-in">
+                <h2 class="summary-title">Cost Category Summary</h2>
+                <div class="table-container">
+                    <table id="summary-table">
+                         <thead>
+                            <tr>
+                                <th style="width: 45%;">Cost Category</th>
+                                <th style="width: 27.5%;">🌟 Terra Dotta Hosted</th>
+                                <th style="width: 27.5%;">🏢 Sunapsis On-Premise</th>
+                            </tr>
+                        </thead>
+                        <tbody id="summary-table-body">
+                           <!-- Summary rows generated by JS -->
+                        </tbody>
+                        <tfoot id="summary-table-footer">
+                           <!-- Total row generated by JS -->
+                        </tfoot>
+                    </table>
+                </div>
+            </div>
             
             <div class="summary-grid">
                 <div class="summary-box fade-in">
@@ -616,7 +528,7 @@
                             <div class="stat-label" id="savings-label">Difference</div>
                         </div>
                     </div>
-                    <div class="summary-percentage" id="savings-percentage">Enter costs above to see comparison</div>
+                    <div class="summary-percentage neutral" id="savings-percentage">Enter costs to see comparison</div>
                 </div>
                 
                 <div class="summary-box fade-in">
@@ -635,7 +547,7 @@
                             <div class="stat-label" id="savings-5year-label">5-Year Difference</div>
                         </div>
                     </div>
-                    <div class="summary-percentage" id="savings-5year-percentage">Enter values above to see 5-year analysis</div>
+                    <div class="summary-percentage neutral" id="savings-5year-percentage">Enter values to see 5-year analysis</div>
                 </div>
             </div>
         </div>
@@ -645,23 +557,15 @@
 
     <script>
         function getValue(id) {
-            try {
-                const element = document.getElementById(id);
-                if (!element) return 0;
-                
-                let value = element.value;
-                if (typeof value === 'string') {
-                    value = value.replace(/[$,]/g, '');
-                }
-                
-                return parseFloat(value) || 0;
-            } catch (error) {
-                return 0;
-            }
+            const element = document.getElementById(id);
+            if (!element) return 0;
+            let value = element.value || '0';
+            value = value.toString().replace(/[$,]/g, '');
+            return parseFloat(value) || 0;
         }
 
         function formatCurrency(amount) {
-            return '$' + amount.toLocaleString();
+            return '$' + amount.toLocaleString('en-US', { minimumFractionDigits: 0, maximumFractionDigits: 0 });
         }
 
         function showLoading() {
@@ -673,392 +577,208 @@
         }
 
         function updateTable() {
-            try {
-                showLoading();
+            showLoading();
+            
+            setTimeout(() => {
+                // Handle checkbox logic
+                const isDedicatedIT = document.getElementById('dedicated-it-checkbox').checked;
+                const dedicatedITCostInput = document.getElementById('dedicated-it-cost');
+                dedicatedITCostInput.disabled = !isDedicatedIT;
+
+                // Get all input values
+                const tdSoftware = getValue('td-software');
+                const tdImplementation = getValue('td-implementation');
+                const isssLicense = getValue('isss-license');
+                const dedicatedITCost = isDedicatedIT ? getValue('dedicated-it-cost') : 0;
+
+                const sunapsisCosts = {
+                    isssImplementation: getValue('isss-implementation'),
+                    windows: getValue('windows-license'),
+                    coldfusion: getValue('coldfusion-license'),
+                    sql: getValue('sql-license'),
+                    ssl: getValue('ssl-license'),
+                    support: getValue('support-services'),
+                    integration: getValue('integration'),
+                    migration: getValue('migration'),
+                    admin: getValue('admin'),
+                    appProd: getValue('app-server-prod'),
+                    appTest: getValue('app-server-test'),
+                    db: getValue('db-server'),
+                    storage: getValue('file-storage')
+                };
+
+                // Calculate sub-totals for summary table
+                const tdSoftwareAndImpTotal = tdSoftware + tdImplementation;
+                const sunSoftwareAndImpTotal = isssLicense + sunapsisCosts.isssImplementation;
+
+                const sunLicensingTotal = sunapsisCosts.windows + sunapsisCosts.coldfusion + sunapsisCosts.sql + sunapsisCosts.ssl;
+                const sunHiddenImpTotal = sunapsisCosts.integration + sunapsisCosts.migration + (isDedicatedIT ? 0 : sunapsisCosts.admin);
+                const sunInfraTotal = sunapsisCosts.appProd + sunapsisCosts.appTest + sunapsisCosts.db + sunapsisCosts.storage;
+
+                // Main table calculations
+                const tdYear1Total = tdSoftwareAndImpTotal;
+                const sunYear1Total = sunSoftwareAndImpTotal + sunLicensingTotal + sunHiddenImpTotal + sunInfraTotal + dedicatedITCost;
                 
-                setTimeout(() => {
-                    // Get basic values
-                    const tdSoftware = getValue('td-software');
-                    const tdImplementation = getValue('td-implementation');
-                    const isssLicense = getValue('isss-license');
-                    const isDedicatedIT = document.getElementById('dedicated-it-checkbox')?.checked || false;
-                    const dedicatedITCost = isDedicatedIT ? getValue('dedicated-it-cost') : 0;
+                // Ongoing Annual Costs
+                const tdAnnualCost = tdSoftware;
+                const sunAnnualCost = isssLicense + sunLicensingTotal + (isDedicatedIT ? 0 : sunapsisCosts.admin) + dedicatedITCost;
 
-                    // Get Sunapsis costs
-                    const sunapsisCosts = {
-                        isssImplementation: getValue('isss-implementation'),
-                        windows: getValue('windows-license'),
-                        coldfusion: getValue('coldfusion-license'),
-                        sql: getValue('sql-license'),
-                        ssl: getValue('ssl-license'),
-                        support: getValue('support-services'),
-                        integration: getValue('integration'),
-                        migration: getValue('migration'),
-                        admin: getValue('admin'),
-                        appProd: getValue('app-server-prod'),
-                        appTest: getValue('app-server-test'),
-                        db: getValue('db-server'),
-                        storage: getValue('file-storage')
-                    };
 
-                    // Calculate totals
-                    const tdSoftwareTotal = tdSoftware + tdImplementation;
-                    const sunSoftwareTotal = isssLicense + sunapsisCosts.isssImplementation + 
-                        sunapsisCosts.windows + sunapsisCosts.coldfusion + sunapsisCosts.sql + sunapsisCosts.ssl;
+                // Populate main table
+                document.getElementById('table-body').innerHTML = `
+                    <tr class="category-header"><td colspan="4"><strong>💼 Year 1 Software and Implementation Cost</strong></td></tr>
+                    <tr><td>🎓 International Students & Scholars License</td><td class="price">${formatCurrency(tdSoftware)}</td><td class="price">${formatCurrency(isssLicense)}</td><td class="sources-column">Institutional licensing for SEVIS management software varies by vendor.<br><a href="https://sunapsis.iu.edu/pricing.html" target="_blank" class="link-style">📋 Sunapsis Pricing</a></td></tr>
+                    <tr><td>⚙️ ISSS Implementation Cost</td><td class="price">${formatCurrency(tdImplementation)}</td><td class="price">${formatCurrency(sunapsisCosts.isssImplementation)}</td><td class="sources-column">Implementation costs for ISSS system setup and configuration.<br><a href="https://sunapsis.iu.edu/implementation.html" target="_blank" class="link-style">🔧 Sunapsis Implementation Guide</a></td></tr>
+                    <tr class="total-row"><td><strong>💰 Total Software & Implementation</strong></td><td class="price"><strong>${formatCurrency(tdSoftwareAndImpTotal)}</strong></td><td class="price"><strong>${formatCurrency(sunSoftwareAndImpTotal)}</strong></td><td></td></tr>
                     
-                    const sunImplementationTotal = sunapsisCosts.integration + sunapsisCosts.migration + 
-                        (isDedicatedIT ? 0 : sunapsisCosts.admin);
-                    
-                    const sunHardwareTotal = sunapsisCosts.appProd + sunapsisCosts.appTest + 
-                        sunapsisCosts.db + sunapsisCosts.storage;
-                    
-                    const tdGrandTotal = tdSoftwareTotal;
-                    const sunGrandTotal = sunSoftwareTotal + sunImplementationTotal + sunHardwareTotal;
-                    const sunFinalTotal = sunGrandTotal + dedicatedITCost;
+                    <tr class="category-header"><td colspan="4"><strong>🖥️ Server Software Licensing</strong></td></tr>
+                    <tr><td>🖥️ Windows Server License</td><td class="price">✅ Included</td><td class="price">${formatCurrency(sunapsisCosts.windows)}</td><td class="sources-column">Microsoft Windows Server 2025 Standard 16-core.<br><a href="https://www.microsoft.com/en-us/windows-server/pricing" target="_blank" class="link-style">💻 Microsoft Pricing</a></td></tr>
+                    <tr><td>⚙️ ColdFusion Server License</td><td class="price">✅ Included</td><td class="price">${formatCurrency(sunapsisCosts.coldfusion)}</td><td class="sources-column">Adobe ColdFusion 2025 Enterprise.<br><a href="https://www.adobe.com/products/coldfusion/pricing.html" target="_blank" class="link-style">🎨 Adobe Pricing</a></td></tr>
+                    <tr><td>🗄️ SQL Server Enterprise License</td><td class="price">✅ Included</td><td class="price">${formatCurrency(sunapsisCosts.sql)}</td><td class="sources-column">SQL Server Enterprise: ~$7,000/core, 4-core min.<br><a href="https://www.microsoft.com/en-us/sql-server/sql-server-2022-pricing" target="_blank" class="link-style">💾 SQL Server Pricing</a></td></tr>
+                    <tr><td>🔒 SSL Certificates</td><td class="price">✅ Included</td><td class="price">${formatCurrency(sunapsisCosts.ssl)}</td><td class="sources-column">DigiCert SSL certificates.<br><a href="https://www.digicert.com/tls-ssl/compare-certificates" target="_blank" class="link-style">🔐 DigiCert Pricing</a></td></tr>
+                    <tr class="total-row"><td><strong>💻 Total Software Licensing</strong></td><td class="price"><strong>✨ Included</strong></td><td class="price"><strong>${formatCurrency(sunLicensingTotal)}</strong></td><td></td></tr>
 
-                    // Generate table
-                    const tbody = document.getElementById('table-body');
-                    tbody.innerHTML = `
-                        <tr class="category-header">
-                            <td colspan="4"><strong>💼 Year 1 Software and Implementation Cost</strong></td>
-                        </tr>
-                        <tr>
-                            <td>🎓 International Students & Scholars License</td>
-                            <td class="price">${formatCurrency(tdSoftware)}</td>
-                            <td class="price">${formatCurrency(isssLicense)}</td>
-                            <td class="sources-column">Institutional licensing for SEVIS management software varies by vendor.<br><a href="https://sunapsis.iu.edu/pricing.html" target="_blank" class="link-style">📋 Sunapsis Pricing</a></td>
-                        </tr>
-                        <tr>
-                            <td>⚙️ ISSS Implementation Cost</td>
-                            <td class="price">${formatCurrency(tdImplementation)}</td>
-                            <td class="price">${formatCurrency(sunapsisCosts.isssImplementation)}</td>
-                            <td class="sources-column">Implementation costs for ISSS system setup and configuration.<br><a href="https://sunapsis.iu.edu/implementation.html" target="_blank" class="link-style">🔧 Sunapsis Implementation Guide</a></td>
-                        </tr>
-                        <tr class="total-row">
-                            <td><strong>💰 Total Year 1 Software and Implementation Cost</strong></td>
-                            <td class="price"><strong>${formatCurrency(tdSoftwareTotal)}</strong></td>
-                            <td class="price"><strong>${formatCurrency(isssLicense + sunapsisCosts.isssImplementation)}</strong></td>
-                            <td class="sources-column"></td>
-                        </tr>
-                        
-                        <tr class="category-header">
-                            <td colspan="4"><strong>🖥️ Server Software Licensing</strong></td>
-                        </tr>
-                        <tr>
-                            <td>🖥️ Windows Server License</td>
-                            <td style="text-align: right; font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; font-weight: 500;">✅ Included</td>
-                            <td class="price">${formatCurrency(sunapsisCosts.windows)}</td>
-                            <td class="sources-column">Microsoft Windows Server 2025 Standard 16-core: $899-$1,149.<br><a href="https://www.microsoft.com/en-us/windows-server/pricing" target="_blank" class="link-style">💻 Microsoft Pricing</a></td>
-                        </tr>
-                        <tr>
-                            <td>⚙️ ColdFusion Server License</td>
-                            <td style="text-align: right; font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; font-weight: 500;">✅ Included</td>
-                            <td class="price">${formatCurrency(sunapsisCosts.coldfusion)}</td>
-                            <td class="sources-column">Adobe ColdFusion 2025 Enterprise: $2,930/year subscription.<br><a href="https://www.adobe.com/products/coldfusion/pricing.html" target="_blank" class="link-style">🎨 Adobe ColdFusion Pricing</a></td>
-                        </tr>
-                        <tr>
-                            <td>🗄️ SQL Server Enterprise License plus DB Encryption</td>
-                            <td style="text-align: right; font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; font-weight: 500;">✅ Included</td>
-                            <td class="price">${formatCurrency(sunapsisCosts.sql)}</td>
-                            <td class="sources-column">SQL Server Enterprise: ~$7,000/core, 4-core minimum.<br><a href="https://www.microsoft.com/en-us/sql-server/sql-server-2022-pricing" target="_blank" class="link-style">💾 SQL Server Pricing</a></td>
-                        </tr>
-                        <tr>
-                            <td>🔒 SSL Certificates</td>
-                            <td style="text-align: right; font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; font-weight: 500;">✅ Included</td>
-                            <td class="price">${formatCurrency(sunapsisCosts.ssl)}</td>
-                            <td class="sources-column">DigiCert SSL certificates: $300-$500/year.<br><a href="https://www.digicert.com/tls-ssl/compare-certificates" target="_blank" class="link-style">🔐 DigiCert Pricing</a></td>
-                        </tr>
-                        <tr class="total-row">
-                            <td><strong>💻 Total Ongoing Server Software Licensing Cost</strong></td>
-                            <td style="text-align: right; font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; font-weight: 600;"><strong>✨ No Hidden Fees</strong></td>
-                            <td class="price"><strong>${formatCurrency(sunapsisCosts.windows + sunapsisCosts.coldfusion + sunapsisCosts.sql + sunapsisCosts.ssl)}</strong></td>
-                            <td class="sources-column"></td>
-                        </tr>
-                        
-                        <tr class="category-header">
-                            <td colspan="4"><strong>🔧 Hidden Implementation Fees</strong></td>
-                        </tr>
-                        <tr>
-                            <td>🔗 Integration Services</td>
-                            <td style="text-align: right; font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; font-weight: 500;">✅ Included</td>
-                            <td class="price">${formatCurrency(sunapsisCosts.integration)}</td>
-                            <td class="sources-column">Integration complexity varies with existing systems.<br><a href="https://sunapsis.iu.edu/services/integration.html" target="_blank" class="link-style">🔧 Integration Services Info</a></td>
-                        </tr>
-                        <tr>
-                            <td>📁 Legacy Data Migration</td>
-                            <td style="text-align: right; font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; font-weight: 500;">✅ Included</td>
-                            <td class="price">${formatCurrency(sunapsisCosts.migration)}</td>
-                            <td class="sources-column">Data migration costs depend on volume and complexity.<br><a href="https://sunapsis.iu.edu/services/migration.html" target="_blank" class="link-style">📦 Migration Services Info</a></td>
-                        </tr>
-                        <tr>
-                            <td>⚙️ System Administration (25% FTE per 1 year minimum)</td>
-                            <td style="text-align: right; font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; font-weight: 500;">✅ Included</td>
-                            <td class="price">${isDedicatedIT ? '👨‍💻 FTE Cost Below' : formatCurrency(sunapsisCosts.admin)}</td>
-                            <td class="sources-column">25% FTE system admin for on-premise deployments.<br><a href="https://www.bls.gov/ooh/computer-and-information-technology/network-and-computer-systems-administrators.htm" target="_blank" class="link-style">📊 BLS Admin Salary Data</a></td>
-                        </tr>
-                        <tr class="total-row">
-                            <td><strong>🚫 Total Hidden Implementation Cost</strong></td>
-                            <td style="text-align: right; font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; font-weight: 600;"><strong>✨ No Hidden Fees</strong></td>
-                            <td class="price"><strong>${formatCurrency(sunImplementationTotal)}</strong></td>
-                            <td class="sources-column"></td>
-                        </tr>
-                        
-                        <tr class="category-header">
-                            <td colspan="4"><strong>🖥️ Average Server Infrastructure Requirements</strong></td>
-                        </tr>
-                        <tr>
-                            <td>🚀 Application Server - Production</td>
-                            <td style="text-align: right; font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; font-weight: 500;">✅ Included</td>
-                            <td class="price">${formatCurrency(sunapsisCosts.appProd)}</td>
-                            <td class="sources-column">Hardware costs vary by specifications and vendor.<br><a href="https://www.dell.com/en-us/work/shop/servers/sr/servers" target="_blank" class="link-style">🖥️ Dell Server Pricing</a></td>
-                        </tr>
-                        <tr>
-                            <td>🧪 Application Server - Test</td>
-                            <td style="text-align: right; font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; font-weight: 500;">✅ Included</td>
-                            <td class="price">${formatCurrency(sunapsisCosts.appTest)}</td>
-                            <td class="sources-column">Test environment typically matches production specs.<br><a href="https://www.hpe.com/us/en/servers/proliant-dl-servers.html" target="_blank" class="link-style">⚡ HPE Server Options</a></td>
-                        </tr>
-                        <tr>
-                            <td>🗄️ Database Server</td>
-                            <td style="text-align: right; font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; font-weight: 500;">✅ Included</td>
-                            <td class="price">${formatCurrency(sunapsisCosts.db)}</td>
-                            <td class="sources-column">Database server specs depend on data volume and performance.<br><a href="https://aws.amazon.com/rds/sqlserver/pricing/" target="_blank" class="link-style">☁️ SQL Server Hardware Requirements</a></td>
-                        </tr>
-                        <tr>
-                            <td>💾 File Storage</td>
-                            <td style="text-align: right; font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; font-weight: 500;">✅ Included</td>
-                            <td class="price">${formatCurrency(sunapsisCosts.storage)}</td>
-                            <td class="sources-column">Storage costs depend on capacity and performance requirements.<br><a href="https://www.netapp.com/data-storage/fas/" target="_blank" class="link-style">📦 Enterprise Storage Solutions</a></td>
-                        </tr>
-                        <tr class="total-row">
-                            <td><strong>🏗️ Total Ongoing Server Infrastructure Cost</strong></td>
-                            <td style="text-align: right; font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; font-weight: 600;"><strong>✨ All Included</strong></td>
-                            <td class="price"><strong>${formatCurrency(sunHardwareTotal)}</strong></td>
-                            <td class="sources-column"></td>
-                        </tr>
-                        
-                        <tr class="grand-total">
-                            <td><strong>💰 Total Year 1 Cost</strong></td>
-                            <td class="price"><strong>${formatCurrency(tdGrandTotal)}</strong></td>
-                            <td class="price"><strong>${formatCurrency(sunGrandTotal)}</strong></td>
-                            <td class="sources-column"><strong>Total first-year deployment costs</strong></td>
-                        </tr>
-                        
-                        ${dedicatedITCost > 0 ? `
-                        <tr>
-                            <td colspan="4" style="border: none; padding-top: 15px;"><strong>👨‍💻 Additional IT Costs</strong></td>
-                        </tr>
-                        <tr>
-                            <td>👨‍💻 Dedicated IT FTE for Sunapsis (Annual)</td>
-                            <td style="text-align: right; font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; font-weight: 500;">✅ Included</td>
-                            <td class="price">${formatCurrency(dedicatedITCost)}</td>
-                            <td class="sources-column">Full-time dedicated IT staff for on-premise Sunapsis management.</td>
-                        </tr>
-                        <tr class="grand-total">
-                            <td><strong>💸 Total with Dedicated IT</strong></td>
-                            <td class="price"><strong>${formatCurrency(tdGrandTotal)}</strong></td>
-                            <td class="price"><strong>${formatCurrency(sunFinalTotal)}</strong></td>
-                            <td class="sources-column"><strong>Total including dedicated IT staff</strong></td>
-                        </tr>
-                        ` : ''}
-                    `;
+                    <tr class="category-header"><td colspan="4"><strong>🔧 Hidden Implementation Fees</strong></td></tr>
+                    <tr><td>🔗 Integration Services</td><td class="price">✅ Included</td><td class="price">${formatCurrency(sunapsisCosts.integration)}</td><td class="sources-column">Complexity varies with existing systems.<br><a href="https://sunapsis.iu.edu/services/integration.html" target="_blank" class="link-style">🔧 Integration Info</a></td></tr>
+                    <tr><td>📁 Legacy Data Migration</td><td class="price">✅ Included</td><td class="price">${formatCurrency(sunapsisCosts.migration)}</td><td class="sources-column">Depends on data volume and complexity.<br><a href="https://sunapsis.iu.edu/services/migration.html" target="_blank" class="link-style">📦 Migration Info</a></td></tr>
+                    <tr><td>⚙️ System Administration (25% FTE)</td><td class="price">✅ Included</td><td class="price">${isDedicatedIT ? '👨‍💻 FTE Below' : formatCurrency(sunapsisCosts.admin)}</td><td class="sources-column">25% FTE for on-premise deployments.<br><a href="https://www.bls.gov/ooh/computer-and-information-technology/network-and-computer-systems-administrators.htm" target="_blank" class="link-style">📊 BLS Data</a></td></tr>
+                    <tr class="total-row"><td><strong>🚫 Total Hidden Implementation</strong></td><td class="price"><strong>✨ Included</strong></td><td class="price"><strong>${formatCurrency(sunHiddenImpTotal)}</strong></td><td></td></tr>
 
-                    // Update summaries
-                    const difference = Math.abs(sunFinalTotal - tdGrandTotal);
-                    const isTerraDottaCheaper = tdGrandTotal < sunFinalTotal;
-                    const totalForPercentage = Math.max(sunFinalTotal, tdGrandTotal);
-                    const savingsPercentage = totalForPercentage > 0 ? ((difference / totalForPercentage) * 100).toFixed(1) : 0;
+                    <tr class="category-header"><td colspan="4"><strong>🏗️ Server Infrastructure</strong></td></tr>
+                    <tr><td>🚀 Application Server - Production</td><td class="price">✅ Included</td><td class="price">${formatCurrency(sunapsisCosts.appProd)}</td><td class="sources-column">Varies by specs and vendor.<br><a href="https://www.dell.com/en-us/work/shop/servers/sr/servers" target="_blank" class="link-style">🖥️ Dell Pricing</a></td></tr>
+                    <tr><td>🧪 Application Server - Test</td><td class="price">✅ Included</td><td class="price">${formatCurrency(sunapsisCosts.appTest)}</td><td class="sources-column">Matches production specs.<br><a href="https://www.hpe.com/us/en/servers/proliant-dl-servers.html" target="_blank" class="link-style">⚡ HPE Options</a></td></tr>
+                    <tr><td>🗄️ Database Server</td><td class="price">✅ Included</td><td class="price">${formatCurrency(sunapsisCosts.db)}</td><td class="sources-column">Depends on data volume.<br><a href="https://aws.amazon.com/rds/sqlserver/pricing/" target="_blank" class="link-style">☁️ AWS RDS Pricing</a></td></tr>
+                    <tr><td>💾 File Storage</td><td class="price">✅ Included</td><td class="price">${formatCurrency(sunapsisCosts.storage)}</td><td class="sources-column">Depends on capacity needs.<br><a href="https://www.netapp.com/data-storage/fas/" target="_blank" class="link-style">📦 NetApp Solutions</a></td></tr>
+                    <tr class="total-row"><td><strong>🏗️ Total Infrastructure</strong></td><td class="price"><strong>✨ Included</strong></td><td class="price"><strong>${formatCurrency(sunInfraTotal)}</strong></td><td></td></tr>
+                    ${isDedicatedIT ? `<tr class="category-header"><td colspan="4"><strong>👨‍💻 Additional IT Costs</strong></td></tr>
+                    <tr><td>👨‍💻 Dedicated IT FTE for Sunapsis</td><td class="price">✅ Included</td><td class="price">${formatCurrency(dedicatedITCost)}</td><td>Full-time dedicated IT staff.</td></tr>` : ''}
+                    <tr class="grand-total"><td ><strong>💸 Total Year 1 Cost</strong></td><td class="price"><strong>${formatCurrency(tdYear1Total)}</strong></td><td class="price"><strong>${formatCurrency(sunYear1Total)}</strong></td><td></td></tr>
+                `;
 
-                    document.getElementById('hosted-total').textContent = formatCurrency(tdGrandTotal);
-                    document.getElementById('sunapsis-total').textContent = formatCurrency(sunFinalTotal);
-                    document.getElementById('savings-amount').textContent = formatCurrency(difference);
+                // Populate Summary Table
+                let summaryFteRow = '';
+                if (isDedicatedIT) {
+                    summaryFteRow = `<tr id="summary-fte-row"><td>Annual Cost: Dedicated IT FTE for Sunapsis</td><td class="price">✅ Included</td><td class="price">${formatCurrency(dedicatedITCost)}</td></tr>`;
+                }
+                
+                document.getElementById('summary-table-body').innerHTML = `
+                    <tr id="summary-row-1"><td>Total Year 1 Software and Implementation Cost</td><td class="price">${formatCurrency(tdSoftwareAndImpTotal)}</td><td class="price">${formatCurrency(sunSoftwareAndImpTotal)}</td></tr>
+                    <tr id="summary-row-2"><td>Total Ongoing Server Software Licensing Cost</td><td class="price">✅ Included</td><td class="price">${formatCurrency(sunLicensingTotal)}</td></tr>
+                    <tr id="summary-row-3"><td>Total Hidden Implementation Cost</td><td class="price">✅ Included</td><td class="price">${formatCurrency(sunHiddenImpTotal)}</td></tr>
+                    <tr id="summary-row-4"><td>Total Ongoing Server Infrastructure Cost</td><td class="price">✅ Included</td><td class="price">${formatCurrency(sunInfraTotal)}</td></tr>
+                    ${summaryFteRow}
+                `;
+                
+                // Populate Summary Table Footer
+                document.getElementById('summary-table-footer').innerHTML = `
+                    <tr class="total-row" style="font-weight: bold;">
+                        <td>Ongoing Annual Cost</td>
+                        <td class="price">${formatCurrency(tdAnnualCost)}</td>
+                        <td class="price">${formatCurrency(sunAnnualCost)}</td>
+                    </tr>
+                    <tr class="grand-total">
+                        <td><strong>💸 Total Year 1 Cost</strong></td>
+                        <td class="price"><strong>${formatCurrency(tdYear1Total)}</strong></td>
+                        <td class="price"><strong>${formatCurrency(sunYear1Total)}</strong></td>
+                    </tr>
+                `;
 
-                    // 5-year calculations
-                    const td5Year = tdSoftware * 5 + tdImplementation;
-                    const sunRecurring = isssLicense + sunapsisCosts.windows + sunapsisCosts.coldfusion + 
-                        sunapsisCosts.sql + sunapsisCosts.ssl + (isDedicatedIT ? 0 : sunapsisCosts.admin);
-                    const sun5Year = (sunRecurring * 5) + sunapsisCosts.isssImplementation + sunapsisCosts.integration + 
-                        sunapsisCosts.migration + sunHardwareTotal + (isDedicatedIT ? dedicatedITCost * 5 : 0);
-                    
-                    const difference5Year = Math.abs(sun5Year - td5Year);
-                    const isTerraDottaCheaper5Year = td5Year < sun5Year;
-                    const totalForPercentage5Year = Math.max(sun5Year, td5Year);
-                    const savingsPercentage5Year = totalForPercentage5Year > 0 ? ((difference5Year / totalForPercentage5Year) * 100).toFixed(1) : 0;
-                    
-                    document.getElementById('hosted-5year').textContent = formatCurrency(td5Year);
-                    document.getElementById('sunapsis-5year').textContent = formatCurrency(sun5Year);
-                    document.getElementById('savings-5year').textContent = formatCurrency(difference5Year);
 
-                    // Update percentage displays
-                    if (tdGrandTotal === 0 && sunFinalTotal === 0) {
-                        document.getElementById('savings-label').textContent = 'Enter costs to compare';
-                        document.getElementById('savings-percentage').textContent = '📊 Fill in cost values above to see comparison';
-                        document.getElementById('savings-percentage').style.color = '#64748b';
-                        
-                        document.getElementById('savings-5year-label').textContent = '5-Year Difference';
-                        document.getElementById('savings-5year-percentage').textContent = '📈 Enter values above to see 5-year analysis';
-                        document.getElementById('savings-5year-percentage').style.color = '#64748b';
-                    } else if (tdGrandTotal === 0) {
-                        document.getElementById('savings-label').textContent = 'Enter Terra Dotta costs';
-                        document.getElementById('savings-percentage').textContent = '🚀 Add Terra Dotta pricing to see comparison';
-                        document.getElementById('savings-percentage').style.color = '#64748b';
-                        
-                        document.getElementById('savings-5year-label').textContent = '5-Year Difference';
-                        document.getElementById('savings-5year-percentage').textContent = '📈 Add Terra Dotta pricing to see 5-year analysis';
-                        document.getElementById('savings-5year-percentage').style.color = '#64748b';
-                    } else if (isTerraDottaCheaper) {
-                        document.getElementById('savings-label').textContent = 'Savings with Terra Dotta';
-                        document.getElementById('savings-percentage').textContent = `🎉 ${savingsPercentage}% savings with Terra Dotta hosted solution`;
-                        document.getElementById('savings-percentage').style.color = '#10b981';
-                        
-                        if (isTerraDottaCheaper5Year) {
-                            document.getElementById('savings-5year-label').textContent = '5-Year Savings with Terra Dotta';
-                            document.getElementById('savings-5year-percentage').textContent = `🚀 ${savingsPercentage5Year}% savings over 5 years with Terra Dotta`;
-                            document.getElementById('savings-5year-percentage').style.color = '#10b981';
-                        } else {
-                            document.getElementById('savings-5year-label').textContent = '5-Year Additional Cost vs Sunapsis';
-                            document.getElementById('savings-5year-percentage').textContent = `📈 ${savingsPercentage5Year}% more expensive over 5 years`;
-                            document.getElementById('savings-5year-percentage').style.color = '#ef4444';
-                        }
-                    } else if (tdGrandTotal > sunFinalTotal) {
-                        document.getElementById('savings-label').textContent = 'Additional Cost vs Sunapsis';
-                        document.getElementById('savings-percentage').textContent = `📊 ${savingsPercentage}% more expensive than Sunapsis solution`;
-                        document.getElementById('savings-percentage').style.color = '#ef4444';
-                        
-                        if (isTerraDottaCheaper5Year) {
-                            document.getElementById('savings-5year-label').textContent = '5-Year Savings with Terra Dotta';
-                            document.getElementById('savings-5year-percentage').textContent = `🎯 ${savingsPercentage5Year}% savings over 5 years despite higher Year 1 costs`;
-                            document.getElementById('savings-5year-percentage').style.color = '#10b981';
-                        } else {
-                            document.getElementById('savings-5year-label').textContent = '5-Year Additional Cost vs Sunapsis';
-                            document.getElementById('savings-5year-percentage').textContent = `📈 ${savingsPercentage5Year}% more expensive over 5 years`;
-                            document.getElementById('savings-5year-percentage').style.color = '#ef4444';
-                        }
-                    } else {
-                        document.getElementById('savings-label').textContent = 'Cost Difference';
-                        document.getElementById('savings-percentage').textContent = '⚖️ Year 1 costs are equal';
-                        document.getElementById('savings-percentage').style.color = '#667eea';
-                        
-                        if (isTerraDottaCheaper5Year) {
-                            document.getElementById('savings-5year-label').textContent = '5-Year Savings with Terra Dotta';
-                            document.getElementById('savings-5year-percentage').textContent = `🚀 ${savingsPercentage5Year}% savings over 5 years with Terra Dotta`;
-                            document.getElementById('savings-5year-percentage').style.color = '#10b981';
-                        } else if (td5Year > sun5Year) {
-                            document.getElementById('savings-5year-label').textContent = '5-Year Additional Cost vs Sunapsis';
-                            document.getElementById('savings-5year-percentage').textContent = `📈 ${savingsPercentage5Year}% more expensive over 5 years`;
-                            document.getElementById('savings-5year-percentage').style.color = '#ef4444';
-                        } else {
-                            document.getElementById('savings-5year-label').textContent = '5-Year Cost Difference';
-                            document.getElementById('savings-5year-percentage').textContent = '⚖️ 5-year costs are equal';
-                            document.getElementById('savings-5year-percentage').style.color = '#667eea';
-                        }
-                    }
+                // Update summary cards
+                const difference = sunYear1Total - tdYear1Total;
+                const savingsPercentage = sunYear1Total > 0 ? ((difference / sunYear1Total) * 100) : 0;
+                
+                document.getElementById('hosted-total').textContent = formatCurrency(tdYear1Total);
+                document.getElementById('sunapsis-total').textContent = formatCurrency(sunYear1Total);
+                document.getElementById('savings-amount').textContent = formatCurrency(Math.abs(difference));
+                
+                const savingsPercentageEl = document.getElementById('savings-percentage');
+                if (tdYear1Total === 0 && sunYear1Total === 0) {
+                    savingsPercentageEl.textContent = 'Enter costs to see comparison';
+                    savingsPercentageEl.className = 'summary-percentage neutral';
+                } else if (difference > 0) {
+                    document.getElementById('savings-label').textContent = 'Savings with Terra Dotta';
+                    savingsPercentageEl.textContent = `🎉 ${savingsPercentage.toFixed(1)}% savings with Terra Dotta`;
+                    savingsPercentageEl.className = 'summary-percentage savings';
+                } else {
+                    document.getElementById('savings-label').textContent = 'Additional Cost';
+                    savingsPercentageEl.textContent = `🔺 ${Math.abs(savingsPercentage).toFixed(1)}% more expensive`;
+                    savingsPercentageEl.className = 'summary-percentage cost';
+                }
 
-                    hideLoading();
-                }, 300);
+                // 5-year calculations
+                const td5Year = tdImplementation + (tdSoftware * 5);
+                const sun5Year = sunapsisCosts.isssImplementation + sunapsisCosts.integration + sunapsisCosts.migration + sunInfraTotal + (sunAnnualCost * 5);
+                
+                const difference5Year = sun5Year - td5Year;
+                const savingsPercentage5Year = sun5Year > 0 ? ((difference5Year / sun5Year) * 100) : 0;
+                
+                document.getElementById('hosted-5year').textContent = formatCurrency(td5Year);
+                document.getElementById('sunapsis-5year').textContent = formatCurrency(sun5Year);
+                document.getElementById('savings-5year').textContent = formatCurrency(Math.abs(difference5Year));
+                
+                const savings5YearPercentageEl = document.getElementById('savings-5year-percentage');
+                if (td5Year === 0 && sun5Year === 0) {
+                    savings5YearPercentageEl.textContent = 'Enter values for 5-year analysis';
+                    savings5YearPercentageEl.className = 'summary-percentage neutral';
+                } else if (difference5Year > 0) {
+                    document.getElementById('savings-5year-label').textContent = '5-Year Savings with Terra Dotta';
+                    savings5YearPercentageEl.textContent = `🚀 ${savingsPercentage5Year.toFixed(1)}% savings over 5 years`;
+                    savings5YearPercentageEl.className = 'summary-percentage savings';
+                } else {
+                    document.getElementById('savings-5year-label').textContent = '5-Year Additional Cost';
+                    savings5YearPercentageEl.textContent = `📈 ${Math.abs(savingsPercentage5Year).toFixed(1)}% more expensive over 5 years`;
+                    savings5YearPercentageEl.className = 'summary-percentage cost';
+                }
 
-            } catch (error) {
-                console.error('Error updating table:', error);
                 hideLoading();
-            }
+            }, 300);
         }
 
         function loadCurrentMarket() {
-            try {
-                // Store current values to preserve them
-                const currentTDSoftware = document.getElementById('td-software').value;
-                const currentTDImplementation = document.getElementById('td-implementation').value;
-                const currentISSS = document.getElementById('isss-license').value;
-                
-                // Reset Sunapsis fields to read-only defaults
-                const fields = [
-                    ['windows-license', '$1,150'],
-                    ['coldfusion-license', '$2,930'],
-                    ['sql-license', '$28,000'],
-                    ['ssl-license', '$500'],
-                    ['support-services', '$7,500'],
-                    ['integration', '$8,400'],
-                    ['migration', '$2,800'],
-                    ['admin', '$18,200'],
-                    ['app-server-prod', '$2,000'],
-                    ['app-server-test', '$2,000'],
-                    ['db-server', '$2,000'],
-                    ['file-storage', '$1,250']
-                ];
-                
-                fields.forEach(([fieldId, value]) => {
-                    const el = document.getElementById(fieldId);
-                    if (el) {
-                        el.type = 'text';
-                        el.value = value;
-                        el.readOnly = true;
-                        el.style.backgroundColor = 'linear-gradient(135deg, #f8fafc, #f1f5f9)';
-                        el.style.color = '#64748b';
-                        el.oninput = null;
-                    }
-                });
-                
-                // Restore preserved values
-                document.getElementById('td-software').value = currentTDSoftware;
-                document.getElementById('td-implementation').value = currentTDImplementation;
-                document.getElementById('isss-license').value = currentISSS;
-                document.getElementById('dedicated-it-checkbox').checked = false;
-                
-                updateTable();
-            } catch (error) {
-                console.error('Error loading current market:', error);
-            }
+            // This function resets fields to their default read-only state
+            const fields = [
+                ['windows-license', '$1,150'], ['coldfusion-license', '$2,930'], ['sql-license', '$28,000'],
+                ['ssl-license', '$500'], ['support-services', '$7,500'], ['integration', '$8,400'],
+                ['migration', '$2,800'], ['admin', '$18,200'], ['app-server-prod', '$2,000'],
+                ['app-server-test', '$2,000'], ['db-server', '$2,000'], ['file-storage', '$1,250']
+            ];
+            
+            fields.forEach(([fieldId, value]) => {
+                const el = document.getElementById(fieldId);
+                if (el) {
+                    el.type = 'text';
+                    el.value = value;
+                    el.readOnly = true;
+                    el.oninput = null;
+                }
+            });
+            document.getElementById('dedicated-it-checkbox').checked = false;
+            updateTable();
         }
 
         function loadInstitutionalIT() {
-            try {
-                // Store current values to preserve them
-                const currentTDSoftware = document.getElementById('td-software').value;
-                const currentTDImplementation = document.getElementById('td-implementation').value;
-                const currentISSS = document.getElementById('isss-license').value;
-                
-                // Make Sunapsis fields editable
-                const fields = [
-                    ['windows-license', 1150],
-                    ['coldfusion-license', 2930],
-                    ['sql-license', 28000],
-                    ['ssl-license', 500],
-                    ['support-services', 7500],
-                    ['integration', 8400],
-                    ['migration', 2800],
-                    ['admin', 18200],
-                    ['app-server-prod', 2000],
-                    ['app-server-test', 2000],
-                    ['db-server', 2000],
-                    ['file-storage', 1250]
-                ];
-                
-                fields.forEach(([fieldId, value]) => {
-                    const el = document.getElementById(fieldId);
-                    if (el) {
-                        el.type = 'number';
-                        el.value = value;
-                        el.readOnly = false;
-                        el.style.backgroundColor = '';
-                        el.style.color = '';
-                        el.oninput = updateTable;
-                    }
-                });
-                
-                // Restore preserved values
-                document.getElementById('td-software').value = currentTDSoftware;
-                document.getElementById('td-implementation').value = currentTDImplementation;
-                document.getElementById('isss-license').value = currentISSS;
-                document.getElementById('dedicated-it-checkbox').checked = false;
-                
-                updateTable();
-            } catch (error) {
-                console.error('Error loading institutional IT:', error);
-            }
+             // This function makes fields editable for custom institutional values
+            const fields = [
+                ['windows-license', 1150], ['coldfusion-license', 2930], ['sql-license', 28000],
+                ['ssl-license', 500], ['support-services', 7500], ['integration', 8400],
+                ['migration', 2800], ['admin', 18200], ['app-server-prod', 2000],
+                ['app-server-test', 2000], ['db-server', 2000], ['file-storage', 1250]
+            ];
+            
+            fields.forEach(([fieldId, value]) => {
+                const el = document.getElementById(fieldId);
+                if (el) {
+                    el.type = 'number';
+                    el.value = value;
+                    el.readOnly = false;
+                    el.oninput = updateTable;
+                }
+            });
+            updateTable();
         }
 
-        // Initialize the table
-        document.addEventListener('DOMContentLoaded', function() {
+        document.addEventListener('DOMContentLoaded', () => {
             updateTable();
         });
     </script>
