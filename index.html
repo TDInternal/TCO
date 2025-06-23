@@ -401,7 +401,16 @@
                     </div>
                     <div class="control-group">
                         <label for="isss-implementation">ISSS Implementation Cost:</label>
-                        <input type="text" id="isss-implementation" value="$8,100" readonly>
+                        <input type="number" id="isss-implementation" value="8100" oninput="updateTable()">
+                    </div>
+                    <div class="control-group checkbox-group">
+                        <div style="min-width: 280px;">
+                             <label class="custom-checkbox-container">
+                                 <input type="checkbox" id="waive-implementation-checkbox" onchange="updateTable()">
+                                 <span class="checkmark"></span>
+                                 <span>✅ Waive ISSS Implementation Cost</span>
+                             </label>
+                        </div>
                     </div>
                     <div class="control-group checkbox-group">
                         <div style="min-width: 280px;">
@@ -581,18 +590,24 @@
             
             setTimeout(() => {
                 // Handle checkbox logic
+                const isImplementationWaived = document.getElementById('waive-implementation-checkbox').checked;
                 const isDedicatedIT = document.getElementById('dedicated-it-checkbox').checked;
+
                 const dedicatedITCostInput = document.getElementById('dedicated-it-cost');
+                const isssImplementationInput = document.getElementById('isss-implementation');
+
                 dedicatedITCostInput.disabled = !isDedicatedIT;
+                isssImplementationInput.disabled = isImplementationWaived;
 
                 // Get all input values
                 const tdSoftware = getValue('td-software');
                 const tdImplementation = getValue('td-implementation');
                 const isssLicense = getValue('isss-license');
                 const dedicatedITCost = isDedicatedIT ? getValue('dedicated-it-cost') : 0;
+                const isssImplementationCost = isImplementationWaived ? 0 : getValue('isss-implementation');
+
 
                 const sunapsisCosts = {
-                    isssImplementation: getValue('isss-implementation'),
                     windows: getValue('windows-license'),
                     coldfusion: getValue('coldfusion-license'),
                     sql: getValue('sql-license'),
@@ -609,7 +624,7 @@
 
                 // Calculate sub-totals for summary table
                 const tdSoftwareAndImpTotal = tdSoftware + tdImplementation;
-                const sunSoftwareAndImpTotal = isssLicense + sunapsisCosts.isssImplementation;
+                const sunSoftwareAndImpTotal = isssLicense + isssImplementationCost;
 
                 const sunLicensingTotal = sunapsisCosts.windows + sunapsisCosts.coldfusion + sunapsisCosts.sql + sunapsisCosts.ssl;
                 const sunHiddenImpTotal = sunapsisCosts.integration + sunapsisCosts.migration + (isDedicatedIT ? 0 : sunapsisCosts.admin);
@@ -628,7 +643,7 @@
                 document.getElementById('table-body').innerHTML = `
                     <tr class="category-header"><td colspan="4"><strong>💼 Year 1 Software and Implementation Cost</strong></td></tr>
                     <tr><td>🎓 International Students & Scholars License</td><td class="price">${formatCurrency(tdSoftware)}</td><td class="price">${formatCurrency(isssLicense)}</td><td class="sources-column">Institutional licensing for SEVIS management software varies by vendor.<br><a href="https://sunapsis.iu.edu/pricing.html" target="_blank" class="link-style">📋 Sunapsis Pricing</a></td></tr>
-                    <tr><td>⚙️ ISSS Implementation Cost</td><td class="price">${formatCurrency(tdImplementation)}</td><td class="price">${formatCurrency(sunapsisCosts.isssImplementation)}</td><td class="sources-column">Implementation costs for ISSS system setup and configuration.<br><a href="https://sunapsis.iu.edu/implementation.html" target="_blank" class="link-style">🔧 Sunapsis Implementation Guide</a></td></tr>
+                    <tr><td>⚙️ ISSS Implementation Cost</td><td class="price">${formatCurrency(tdImplementation)}</td><td class="price">${formatCurrency(isssImplementationCost)}</td><td class="sources-column">Implementation costs for ISSS system setup and configuration.<br><a href="https://sunapsis.iu.edu/implementation.html" target="_blank" class="link-style">🔧 Sunapsis Implementation Guide</a></td></tr>
                     <tr class="total-row"><td><strong>💰 Total Software & Implementation</strong></td><td class="price"><strong>${formatCurrency(tdSoftwareAndImpTotal)}</strong></td><td class="price"><strong>${formatCurrency(sunSoftwareAndImpTotal)}</strong></td><td></td></tr>
                     
                     <tr class="category-header"><td colspan="4"><strong>🖥️ Server Software Licensing</strong></td></tr>
@@ -708,7 +723,7 @@
 
                 // 5-year calculations
                 const td5Year = tdImplementation + (tdSoftware * 5);
-                const sun5Year = sunapsisCosts.isssImplementation + sunapsisCosts.integration + sunapsisCosts.migration + sunInfraTotal + (sunAnnualCost * 5);
+                const sun5Year = isssImplementationCost + sunapsisCosts.integration + sunapsisCosts.migration + sunInfraTotal + (sunAnnualCost * 5);
                 
                 const difference5Year = sun5Year - td5Year;
                 const savingsPercentage5Year = sun5Year > 0 ? ((difference5Year / sun5Year) * 100) : 0;
@@ -753,6 +768,8 @@
                     el.oninput = null;
                 }
             });
+            document.getElementById('isss-implementation').value = "8100";
+            document.getElementById('waive-implementation-checkbox').checked = false;
             document.getElementById('dedicated-it-checkbox').checked = false;
             updateTable();
         }
@@ -760,6 +777,7 @@
         function loadInstitutionalIT() {
              // This function makes fields editable for custom institutional values
             const fields = [
+                ['isss-implementation', 8100],
                 ['windows-license', 1150], ['coldfusion-license', 2930], ['sql-license', 28000],
                 ['ssl-license', 500], ['support-services', 7500], ['integration', 8400],
                 ['migration', 2800], ['admin', 18200], ['app-server-prod', 2000],
@@ -775,6 +793,8 @@
                     el.oninput = updateTable;
                 }
             });
+            document.getElementById('waive-implementation-checkbox').checked = false;
+            document.getElementById('dedicated-it-checkbox').checked = false;
             updateTable();
         }
 
