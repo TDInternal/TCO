@@ -3,21 +3,32 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Modern Cost Comparison Calculator</title>
+    <title>ROI Calculator | Terra Dotta vs Sunapsis Cost Analysis</title>
+    
+    <!-- External Dependencies -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.31/jspdf.plugin.autotable.min.js"></script>
+    
     <style>
+        /* CSS Variables for Theme */
         :root {
-            --td-blue: #00aeef;
-            --td-green: #8dc73f;
-            --td-orange: #f57922;
-            --td-yellow: #ffcf03;
-            --td-teal: #019c96;
-            --td-red: #ee4124;
-            --td-purple: #7f3f98;
-            --td-maroon: #71002a;
-            --text-dark: #1e293b;
-            --text-light: #f8fafc;
-            --bg-light: #f1f5f9;
-            --border-light: #e2e8f0;
+            --primary: #0ea5e9;
+            --primary-dark: #0284c7;
+            --primary-light: #38bdf8;
+            --success: #10b981;
+            --warning: #f59e0b;
+            --danger: #ef4444;
+            --neutral: #6b7280;
+            --dark: #111827;
+            --light: #f9fafb;
+            --white: #ffffff;
+            --border: #e5e7eb;
+            --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.05);
+            --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.1);
+            --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.1);
+            --shadow-xl: 0 20px 25px -5px rgb(0 0 0 / 0.1);
+            --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
         }
 
         * {
@@ -27,779 +38,1695 @@
         }
 
         body {
-            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-            background: var(--bg-light);
+            font-family: 'Inter', system-ui, -apple-system, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             min-height: 100vh;
-            padding: 20px;
+            padding: 1.5rem;
+            color: var(--dark);
+            line-height: 1.6;
         }
 
-        .container {
-            max-width: 1400px;
+        /* Main Container */
+        .app-container {
+            max-width: 1600px;
             margin: 0 auto;
-            background: rgba(255, 255, 255, 0.95);
-            backdrop-filter: blur(20px);
-            border-radius: 24px;
-            box-shadow: 0 32px 64px rgba(0, 0, 0, 0.1);
+            background: var(--white);
+            border-radius: 1rem;
+            box-shadow: var(--shadow-xl);
             overflow: hidden;
-            animation: slideUp 0.8s ease-out;
-            border: 1px solid var(--border-light);
+            animation: fadeIn 0.5s ease-out;
         }
 
-        @keyframes slideUp {
-            from { opacity: 0; transform: translateY(30px); }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
             to { opacity: 1; transform: translateY(0); }
         }
 
+        /* Header */
         .header {
-            background: var(--td-blue);
-            color: white;
-            padding: 40px;
+            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+            color: var(--white);
+            padding: 2.5rem 2rem;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .header::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23ffffff' fill-opacity='0.05'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+        }
+
+        .header-content {
+            position: relative;
+            z-index: 1;
             text-align: center;
         }
 
         .header h1 {
             font-size: 2.5rem;
-            font-weight: 700;
-            margin-bottom: 8px;
-            text-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+            font-weight: 800;
+            margin-bottom: 0.5rem;
+            letter-spacing: -0.02em;
         }
 
-        .header p {
-            font-size: 1.1rem;
+        .header-subtitle {
+            font-size: 1.125rem;
             opacity: 0.9;
-            font-weight: 300;
+            font-weight: 400;
         }
 
-        .main-content {
-            padding: 40px;
+        /* Progress Bar */
+        .progress-bar {
+            background: rgba(255, 255, 255, 0.2);
+            height: 4px;
+            margin-top: 1.5rem;
+            border-radius: 2px;
+            overflow: hidden;
         }
 
-        .controls {
-            background: rgba(248, 250, 252, 0.8);
-            border-radius: 20px;
-            padding: 32px;
-            margin-bottom: 32px;
-            border: 1px solid var(--border-light);
-            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.05);
+        .progress-fill {
+            background: var(--white);
+            height: 100%;
+            width: 25%;
+            border-radius: 2px;
+            transition: width 0.5s ease;
         }
 
-        .control-section {
-            background: white;
-            border-radius: 16px;
-            padding: 24px;
-            margin-bottom: 24px;
-            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
-            border: 1px solid var(--border-light);
-            transition: all 0.3s ease;
-        }
-        
-        .control-section h4 {
-            font-size: 1.25rem;
-            font-weight: 600;
-            color: var(--text-dark);
-            margin-bottom: 20px;
-            padding-bottom: 12px;
-            border-bottom: 3px solid var(--td-blue);
+        /* Content Container */
+        .content {
+            padding: 2rem;
         }
 
-        .control-group {
+        /* Step Navigation */
+        .step-nav {
             display: flex;
-            align-items: center;
-            margin-bottom: 20px;
-            gap: 20px;
+            justify-content: space-between;
+            margin-bottom: 2rem;
+            padding: 1rem;
+            background: var(--light);
+            border-radius: 0.75rem;
         }
 
-        .control-group label {
-            min-width: 280px;
-            font-weight: 500;
-            color: #374151;
-            font-size: 0.95rem;
-        }
-
-        /* Remove arrows from number inputs */
-        input::-webkit-outer-spin-button,
-        input::-webkit-inner-spin-button {
-          -webkit-appearance: none;
-          margin: 0;
-        }
-        input[type=number] {
-          -moz-appearance: textfield;
-        }
-
-        .control-group input {
-            padding: 12px 16px;
-            border: 2px solid var(--border-light);
-            border-radius: 12px;
-            width: 140px;
-            font-size: 14px;
-            font-weight: 500;
-            transition: all 0.3s ease;
-            background: white;
-        }
-
-        .control-group input:focus {
-            outline: none;
-            border-color: var(--td-blue);
-            box-shadow: 0 0 0 4px rgba(0, 174, 239, 0.15);
-        }
-
-        .control-group input:read-only,
-        .control-group input:disabled {
-            background-color: var(--bg-light);
-            color: #64748b;
-            cursor: not-allowed;
-        }
-        
-        /* Custom Checkbox styles */
-        .checkbox-group { display: flex; align-items: center; gap: 12px; }
-        .custom-checkbox-container {
-            display: flex;
-            align-items: center;
-            cursor: pointer;
-            gap: 12px;
-            min-width: auto;
-        }
-        .checkbox-group input[type="checkbox"] {
-            display: none;
-        }
-        .checkmark {
+        .step-item {
+            flex: 1;
+            text-align: center;
             position: relative;
-            height: 20px;
-            width: 20px;
-            background-color: #eee;
-            border: 2px solid var(--border-light);
-            border-radius: 4px;
-            transition: all 0.2s;
+            cursor: pointer;
         }
-        .custom-checkbox-container:hover .checkmark {
-            background-color: #ccc;
-        }
-        input[type="checkbox"]:checked + .checkmark {
-            background-color: var(--td-blue);
-            border-color: var(--td-blue);
-        }
-        .checkmark:after {
-            content: "";
+
+        .step-item:not(:last-child)::after {
+            content: '';
             position: absolute;
-            display: none;
+            top: 20px;
+            right: -50%;
+            width: 100%;
+            height: 2px;
+            background: var(--border);
+            z-index: 0;
         }
-        input[type="checkbox"]:checked + .checkmark:after {
+
+        .step-item.completed:not(:last-child)::after {
+            background: var(--success);
+        }
+
+        .step-number {
+            width: 40px;
+            height: 40px;
+            background: var(--white);
+            border: 2px solid var(--border);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 0.5rem;
+            font-weight: 700;
+            color: var(--neutral);
+            position: relative;
+            z-index: 1;
+            transition: var(--transition);
+        }
+
+        .step-item.active .step-number {
+            background: var(--primary);
+            color: var(--white);
+            border-color: var(--primary);
+            transform: scale(1.1);
+        }
+
+        .step-item.completed .step-number {
+            background: var(--success);
+            color: var(--white);
+            border-color: var(--success);
+        }
+
+        .step-label {
+            font-size: 0.875rem;
+            color: var(--neutral);
+            font-weight: 600;
+        }
+
+        .step-item.active .step-label {
+            color: var(--primary);
+        }
+
+        .step-item.completed .step-label {
+            color: var(--success);
+        }
+
+        /* Step Content */
+        .step-content {
+            display: none;
+            animation: slideIn 0.3s ease-out;
+        }
+
+        .step-content.active {
             display: block;
         }
-        .checkmark:after {
-            left: 6px;
-            top: 2px;
-            width: 5px;
-            height: 10px;
-            border: solid white;
-            border-width: 0 3px 3px 0;
-            transform: rotate(45deg);
+
+        @keyframes slideIn {
+            from { opacity: 0; transform: translateX(20px); }
+            to { opacity: 1; transform: translateX(0); }
         }
 
-
-        .preset-section {
-            text-align: center; margin: 32px 0; padding: 24px;
-            background: #f7f9fc; border-radius: 16px;
-            border: 1px solid var(--border-light);
+        /* Guidance Box */
+        .guidance-box {
+            background: linear-gradient(135deg, var(--primary-light), var(--primary));
+            color: var(--white);
+            padding: 1.5rem;
+            border-radius: 0.75rem;
+            margin-bottom: 2rem;
+            position: relative;
+            overflow: hidden;
         }
 
-        .preset-section h3 { font-size: 1.2rem; font-weight: 600; margin-bottom: 16px; color: var(--text-dark); }
-
-        .preset-btn {
-            background: var(--td-blue);
-            color: white; border: none; padding: 14px 28px; margin: 8px; border-radius: 12px;
-            cursor: pointer; font-size: 14px; font-weight: 600; transition: all 0.3s ease;
-            box-shadow: 0 4px 15px rgba(0, 174, 239, 0.2);
+        .guidance-box::before {
+            content: '💡';
+            position: absolute;
+            top: -10px;
+            right: 20px;
+            font-size: 3rem;
+            opacity: 0.2;
         }
 
-        .preset-btn:hover {
+        .guidance-title {
+            font-size: 1.125rem;
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .guidance-text {
+            font-size: 0.95rem;
+            line-height: 1.6;
+            opacity: 0.95;
+        }
+
+        .guidance-tip {
+            background: rgba(255, 255, 255, 0.2);
+            padding: 0.75rem;
+            border-radius: 0.5rem;
+            margin-top: 1rem;
+            font-size: 0.875rem;
+        }
+
+        /* Input Cards */
+        .input-section {
+            display: grid;
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .input-card {
+            background: var(--white);
+            border: 2px solid var(--border);
+            border-radius: 0.75rem;
+            padding: 1.75rem;
+            transition: var(--transition);
+        }
+
+        .input-card:hover {
+            border-color: var(--primary-light);
+            box-shadow: var(--shadow-md);
+        }
+
+        .input-card.highlight {
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(14, 165, 233, 0.1);
+        }
+
+        .input-card-header {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .input-card-icon {
+            width: 40px;
+            height: 40px;
+            background: var(--primary-light);
+            color: var(--white);
+            border-radius: 0.5rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+        }
+
+        .input-card-title {
+            flex: 1;
+        }
+
+        .input-card-title h3 {
+            font-size: 1.125rem;
+            font-weight: 700;
+            color: var(--dark);
+            margin-bottom: 0.25rem;
+        }
+
+        .input-card-subtitle {
+            font-size: 0.875rem;
+            color: var(--neutral);
+        }
+
+        /* Input Fields */
+        .input-group {
+            margin-bottom: 1.25rem;
+        }
+
+        .input-label {
+            display: block;
+            font-size: 0.875rem;
+            font-weight: 600;
+            color: var(--dark);
+            margin-bottom: 0.5rem;
+        }
+
+        .input-help {
+            font-size: 0.75rem;
+            color: var(--neutral);
+            margin-top: 0.25rem;
+        }
+
+        .input-wrapper {
+            position: relative;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .input-field {
+            flex: 1;
+            padding: 0.75rem 1rem;
+            border: 2px solid var(--border);
+            border-radius: 0.5rem;
+            font-size: 1rem;
+            font-weight: 500;
+            transition: var(--transition);
+            background: var(--white);
+        }
+
+        .input-field:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(14, 165, 233, 0.1);
+        }
+
+        .input-field.with-prefix {
+            padding-left: 2.5rem;
+        }
+
+        .input-prefix {
+            position: absolute;
+            left: 1rem;
+            color: var(--neutral);
+            font-weight: 600;
+            font-size: 1rem;
+        }
+
+        .input-field:disabled,
+        .input-field[readonly] {
+            background: var(--light);
+            color: var(--neutral);
+            cursor: not-allowed;
+        }
+
+        /* Quick Fill Buttons */
+        .quick-fill {
+            display: flex;
+            gap: 0.5rem;
+            margin-top: 0.5rem;
+            flex-wrap: wrap;
+        }
+
+        .quick-fill-btn {
+            padding: 0.375rem 0.75rem;
+            background: var(--light);
+            border: 1px solid var(--border);
+            border-radius: 0.375rem;
+            font-size: 0.75rem;
+            font-weight: 600;
+            color: var(--neutral);
+            cursor: pointer;
+            transition: var(--transition);
+        }
+
+        .quick-fill-btn:hover {
+            background: var(--primary);
+            color: var(--white);
+            border-color: var(--primary);
+        }
+
+        /* Toggle Switch */
+        .toggle-group {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            margin: 1.25rem 0;
+            padding: 1rem;
+            background: var(--light);
+            border-radius: 0.5rem;
+        }
+
+        .toggle-switch {
+            position: relative;
+            width: 48px;
+            height: 24px;
+        }
+
+        .toggle-switch input {
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
+
+        .toggle-slider {
+            position: absolute;
+            cursor: pointer;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: var(--neutral);
+            border-radius: 24px;
+            transition: var(--transition);
+        }
+
+        .toggle-slider:before {
+            position: absolute;
+            content: "";
+            height: 18px;
+            width: 18px;
+            left: 3px;
+            bottom: 3px;
+            background: var(--white);
+            border-radius: 50%;
+            transition: var(--transition);
+        }
+
+        input:checked + .toggle-slider {
+            background: var(--primary);
+        }
+
+        input:checked + .toggle-slider:before {
+            transform: translateX(24px);
+        }
+
+        .toggle-content {
+            flex: 1;
+        }
+
+        .toggle-label {
+            font-size: 0.95rem;
+            font-weight: 600;
+            color: var(--dark);
+            margin-bottom: 0.25rem;
+        }
+
+        .toggle-description {
+            font-size: 0.75rem;
+            color: var(--neutral);
+        }
+
+        /* Action Buttons */
+        .action-buttons {
+            display: flex;
+            gap: 1rem;
+            justify-content: space-between;
+            margin-top: 2rem;
+            padding-top: 2rem;
+            border-top: 2px solid var(--light);
+        }
+
+        .btn {
+            padding: 0.875rem 1.75rem;
+            border: none;
+            border-radius: 0.5rem;
+            font-size: 0.95rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: var(--transition);
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .btn-primary {
+            background: var(--primary);
+            color: var(--white);
+        }
+
+        .btn-primary:hover {
+            background: var(--primary-dark);
             transform: translateY(-2px);
-            box-shadow: 0 8px 25px rgba(0, 174, 239, 0.3);
+            box-shadow: var(--shadow-lg);
         }
 
-        .preset-btn.secondary { background: #475569; box-shadow: 0 4px 15px rgba(100, 116, 139, 0.2); }
-        .preset-btn.secondary:hover { box-shadow: 0 8px 25px rgba(100, 116, 139, 0.3); }
+        .btn-secondary {
+            background: var(--light);
+            color: var(--neutral);
+        }
 
+        .btn-secondary:hover {
+            background: var(--border);
+        }
+
+        .btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        /* Summary Cards */
+        .summary-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .summary-card {
+            background: var(--white);
+            border-radius: 0.75rem;
+            padding: 1.5rem;
+            box-shadow: var(--shadow-md);
+            border: 1px solid var(--border);
+            transition: var(--transition);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .summary-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 4px;
+            height: 100%;
+            background: var(--primary);
+        }
+
+        .summary-card.success::before {
+            background: var(--success);
+        }
+
+        .summary-card.warning::before {
+            background: var(--warning);
+        }
+
+        .summary-card-title {
+            font-size: 0.875rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            color: var(--neutral);
+            margin-bottom: 0.75rem;
+            letter-spacing: 0.05em;
+        }
+
+        .summary-card-value {
+            font-size: 2rem;
+            font-weight: 800;
+            color: var(--dark);
+            margin-bottom: 0.5rem;
+        }
+
+        .summary-card.success .summary-card-value {
+            color: var(--success);
+        }
+
+        .summary-card-subtitle {
+            font-size: 0.875rem;
+            color: var(--neutral);
+        }
+
+        .summary-badge {
+            display: inline-block;
+            padding: 0.375rem 0.75rem;
+            border-radius: 0.375rem;
+            font-size: 0.75rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            margin-top: 0.75rem;
+            background: rgba(16, 185, 129, 0.1);
+            color: var(--success);
+        }
+
+        /* Results Table */
         .table-container {
-            background: white; border-radius: 20px; overflow: hidden;
-            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.08);
-            border: 1px solid var(--border-light);
-            margin-bottom: 32px;
+            background: var(--white);
+            border-radius: 0.75rem;
+            overflow: hidden;
+            box-shadow: var(--shadow-md);
+            margin-bottom: 2rem;
         }
 
-        table { width: 100%; border-collapse: collapse; }
+        .table-header {
+            background: var(--dark);
+            color: var(--white);
+            padding: 1rem 1.5rem;
+            font-weight: 700;
+            font-size: 1.125rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
 
         th {
-            background: var(--text-dark); color: white;
-            padding: 18px 16px; text-align: left; font-size: 14px;
-            font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px;
+            background: var(--light);
+            padding: 0.875rem 1rem;
+            text-align: left;
+            font-size: 0.75rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            color: var(--neutral);
+            border-bottom: 2px solid var(--border);
         }
 
         td {
-            padding: 14px 16px; border-bottom: 1px solid var(--border-light);
-            font-size: 14px; transition: background-color 0.2s ease;
+            padding: 1rem;
+            border-bottom: 1px solid var(--border);
+            font-size: 0.875rem;
         }
 
-        tr:last-child td { border-bottom: none; }
-        tr:hover td { background-color: #f8fafc; }
+        tr:hover td {
+            background: var(--light);
+        }
 
-        .category-header td {
-            font-weight: 700; color: var(--text-dark); border-bottom: 2px solid var(--border-light);
-            font-size: 15px; background-color: var(--bg-light) !important;
+        .category-row td {
+            background: var(--light);
+            font-weight: 700;
+            color: var(--dark);
+            border-bottom: 2px solid var(--border);
+            font-size: 0.95rem;
         }
 
         .total-row td {
-            font-weight: 600; color: var(--td-blue); background-color: rgba(0, 174, 239, 0.05) !important;
-            border-top: 1px solid rgba(0, 174, 239, 0.2);
-            border-bottom: 1px solid rgba(0, 174, 239, 0.2);
-        }
-        
-        .grand-total td {
-            background: var(--td-blue) !important; color: white !important;
-            font-weight: 700; font-size: 16px;
-        }
-
-        .price { text-align: right; font-family: 'Inter', sans-serif; font-weight: 600; }
-
-        .sources-column { font-size: 12px; color: #64748b; max-width: 200px; line-height: 1.4; }
-        .link-style { color: var(--td-blue); text-decoration: none; font-weight: 500; }
-        .link-style:hover { text-decoration: underline; }
-        
-        .summary-title {
-            font-size: 1.75rem;
+            background: rgba(14, 165, 233, 0.05);
             font-weight: 700;
-            color: var(--text-dark);
+            color: var(--primary-dark);
+            border-top: 2px solid var(--primary-light);
+            border-bottom: 2px solid var(--primary-light);
+        }
+
+        .grand-total-row td {
+            background: var(--primary);
+            color: var(--white);
+            font-weight: 800;
+            font-size: 1.125rem;
+            padding: 1.25rem 1rem;
+        }
+
+        .value-cell {
+            text-align: right;
+            font-family: 'Inter', monospace;
+            font-weight: 600;
+        }
+
+        .included-badge {
+            display: inline-block;
+            background: var(--success);
+            color: var(--white);
+            padding: 0.25rem 0.75rem;
+            border-radius: 0.375rem;
+            font-size: 0.75rem;
+            font-weight: 600;
+        }
+
+        /* Export Section */
+        .export-options {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1rem;
+            margin: 2rem 0;
+        }
+
+        .export-card {
+            background: var(--white);
+            border: 2px solid var(--border);
+            border-radius: 0.75rem;
+            padding: 1.5rem;
             text-align: center;
-            margin-bottom: 24px;
-            padding-bottom: 12px;
-            border-bottom: 3px solid var(--td-blue);
+            cursor: pointer;
+            transition: var(--transition);
         }
 
-        .summary-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 24px; margin-top: 32px; }
-        .summary-box {
-            background: white; border-radius: 20px; padding: 32px;
-            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.08); border: 1px solid var(--border-light);
-        }
-        .summary-box h3 { font-size: 1.5rem; font-weight: 700; color: var(--text-dark); margin-bottom: 24px; text-align: center; }
-        .summary-stats { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; margin-bottom: 24px; }
-        
-        .stat-box {
-            background: var(--bg-light); padding: 20px; border-radius: 16px; text-align: center;
-            border: 2px solid var(--border-light);
+        .export-card:hover {
+            border-color: var(--primary);
+            transform: translateY(-4px);
+            box-shadow: var(--shadow-lg);
         }
 
-        .stat-value {
-            font-size: 1.8rem; font-weight: 800; color: var(--td-blue);
-            margin-bottom: 4px;
+        .export-icon {
+            font-size: 3rem;
+            margin-bottom: 1rem;
         }
 
-        .stat-label { font-size: 12px; color: #64748b; font-weight: 500; text-transform: uppercase; }
-
-        .summary-percentage {
-            text-align: center; font-size: 1.2rem; font-weight: 600; padding: 16px;
-            border-radius: 12px; border: 1px solid rgba(0,0,0,0.1);
-        }
-        
-        .summary-percentage.savings { background-color: rgba(141, 199, 63, 0.1); color: #5a7e29; }
-        .summary-percentage.cost { background-color: rgba(238, 65, 36, 0.1); color: var(--td-red); }
-        .summary-percentage.neutral { background-color: var(--bg-light); color: #64748b; }
-
-        #summary-table td:first-child {
-             border-left: 5px solid;
-             font-weight: 600;
+        .export-title {
+            font-size: 1.125rem;
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+            color: var(--dark);
         }
 
-        #summary-row-1 td:first-child { border-left-color: var(--td-green); }
-        #summary-row-2 td:first-child { border-left-color: var(--td-orange); }
-        #summary-row-3 td:first-child { border-left-color: var(--td-red); }
-        #summary-row-4 td:first-child { border-left-color: var(--td-purple); }
-        #summary-fte-row td:first-child { border-left-color: var(--td-maroon); }
-
-
-        .loading-spinner {
-            display: none; width: 24px; height: 24px;
-            border: 3px solid var(--border-light); border-top: 3px solid var(--td-blue);
-            border-radius: 50%; animation: spin 1s linear infinite; margin: 20px auto;
+        .export-description {
+            font-size: 0.875rem;
+            color: var(--neutral);
         }
-        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
-        .fade-in { animation: fadeIn 0.5s ease-in; }
-        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
 
+        /* Info Alert */
+        .info-alert {
+            background: rgba(14, 165, 233, 0.1);
+            border-left: 4px solid var(--primary);
+            padding: 1rem;
+            border-radius: 0.5rem;
+            margin: 1rem 0;
+        }
+
+        .info-alert-title {
+            font-weight: 700;
+            color: var(--primary-dark);
+            margin-bottom: 0.25rem;
+        }
+
+        .info-alert-text {
+            font-size: 0.875rem;
+            color: var(--dark);
+        }
+
+        /* Loading State */
+        .loading {
+            display: none;
+            text-align: center;
+            padding: 3rem;
+        }
+
+        .loading.active {
+            display: block;
+        }
+
+        .spinner {
+            width: 48px;
+            height: 48px;
+            border: 4px solid var(--border);
+            border-top: 4px solid var(--primary);
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin: 0 auto;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        /* Responsive */
         @media (max-width: 768px) {
-            .container { margin: 10px; border-radius: 16px; }
-            .header { padding: 24px; }
-            .header h1 { font-size: 2rem; }
-            .main-content { padding: 20px; }
-            .control-group { flex-direction: column; align-items: stretch; gap: 8px; }
-            .control-group label, .custom-checkbox-container { min-width: auto; }
-            .control-group input { width: 100%; }
-            .summary-grid { grid-template-columns: 1fr; }
-            .summary-stats { grid-template-columns: 1fr; }
+            .header h1 {
+                font-size: 1.75rem;
+            }
+            
+            .step-nav {
+                flex-wrap: wrap;
+            }
+            
+            .step-item {
+                flex-basis: 50%;
+                margin-bottom: 1rem;
+            }
+            
+            .step-item:not(:last-child)::after {
+                display: none;
+            }
+            
+            .action-buttons {
+                flex-direction: column;
+            }
+            
+            .btn {
+                width: 100%;
+                justify-content: center;
+            }
+            
+            .summary-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            table {
+                font-size: 0.75rem;
+            }
+            
+            td, th {
+                padding: 0.5rem;
+            }
         }
 
-        .floating-action {
-            position: fixed; bottom: 24px; right: 24px;
-            background: var(--td-blue); color: white; border: none; border-radius: 50%;
-            width: 60px; height: 60px; cursor: pointer;
-            box-shadow: 0 8px 25px rgba(0, 174, 239, 0.4);
-            transition: all 0.3s ease; display: flex; align-items: center; justify-content: center; font-size: 24px;
-        }
-        .floating-action:hover { transform: scale(1.1); box-shadow: 0 12px 35px rgba(0, 174, 239, 0.5); }
-
+        /* Print Styles */
         @media print {
-            body { background: none; padding: 0; }
-            .container { box-shadow: none; border-radius: 0; backdrop-filter: none; max-width: 100%; margin: 0; }
-            .header, .controls, .floating-action { display: none; }
-            .main-content { padding: 0; }
-            .summary-box, .table-container { box-shadow: none; border: 1px solid #ccc; page-break-inside: avoid; }
-            .summary-grid { grid-template-columns: 1fr; }
-            .table-container { margin-bottom: 20px;}
-            h2.summary-title { margin-top: 30px; }
+            body {
+                background: var(--white);
+                padding: 0;
+            }
+            
+            .app-container {
+                box-shadow: none;
+                border-radius: 0;
+            }
+            
+            .step-nav,
+            .action-buttons,
+            .guidance-box,
+            .quick-fill {
+                display: none;
+            }
+            
+            .step-content {
+                display: block !important;
+            }
+            
+            .table-container,
+            .summary-card {
+                page-break-inside: avoid;
+            }
         }
     </style>
 </head>
 <body>
-    <div class="container">
-        <div class="header">
-            <h1>💰 Cost Comparison Calculator</h1>
-            <p>Terra Dotta ISSS Hosted Solution vs Sunapsis On-Premise Deployment</p>
-        </div>
-        
-        <div class="main-content">
-            <div class="controls">
-                <div class="control-section">
-                    <h4>🚀 Terra Dotta Solution Costs</h4>
-                    <div class="control-group">
-                        <label for="td-software">Terra Dotta Software License (Year 1):</label>
-                        <input type="number" id="td-software" value="" placeholder="Enter amount" oninput="updateTable()">
-                    </div>
-                    <div class="control-group">
-                        <label></label>
-                        <a href="https://terradotta-my.sharepoint.com/:x:/r/personal/george_hogan_terradotta_com/_layouts/15/Doc.aspx?sourcedoc=%7B0BDD0173-4CB1-4711-BF37-A86CB0C71E32%7D&file=Pricing%20&%20Calculator.xlsx=&action=default&mobileredirect=true" target="_blank" class="link-style">📊 Terra Dotta Pricing Matrix</a>
-                    </div>
-                    <div class="control-group">
-                        <label for="td-implementation">Terra Dotta Implementation Services (Year 1):</label>
-                        <input type="number" id="td-implementation" value="" placeholder="Enter amount" oninput="updateTable()">
-                    </div>
+    <div class="app-container">
+        <!-- Header -->
+        <header class="header">
+            <div class="header-content">
+                <h1>💰 ROI Calculator</h1>
+                <p class="header-subtitle">Discover Your Savings: Terra Dotta vs. Sunapsis</p>
+                <div class="progress-bar">
+                    <div class="progress-fill" id="progress"></div>
                 </div>
-                
-                <div class="preset-section">
-                    <h3>⚡ Quick Configuration Presets</h3>
-                    <button class="preset-btn" onclick="loadCurrentMarket()">📈 2025 Market Rates</button>
-                    <button class="preset-btn secondary" onclick="loadInstitutionalIT()">🏛️ Institutional IT Inputs</button>
+            </div>
+        </header>
+
+        <!-- Main Content -->
+        <div class="content">
+            <!-- Step Navigation -->
+            <div class="step-nav">
+                <div class="step-item active" data-step="1">
+                    <div class="step-number">1</div>
+                    <div class="step-label">Current Costs</div>
                 </div>
-                
-                <div class="control-section">
-                    <h4>📦 Sunapsis Software Licensing Costs</h4>
-                    <div class="control-group">
-                        <label for="isss-license">ISSS License:</label>
-                        <input type="number" id="isss-license" value="" placeholder="Enter amount" oninput="updateTable()">
-                    </div>
-                    <div class="control-group">
-                        <label></label>
-                        <a href="https://sunapsis.iu.edu/pricing.html" target="_blank" class="link-style">📋 Sunapsis Pricing Matrix</a>
-                    </div>
-                    <div class="control-group">
-                        <label for="isss-implementation">ISSS Implementation Cost:</label>
-                        <input type="number" id="isss-implementation" value="8100" oninput="updateTable()">
-                    </div>
-                    <div class="control-group checkbox-group">
-                        <div style="min-width: 280px;">
-                             <label class="custom-checkbox-container">
-                                 <input type="checkbox" id="waive-implementation-checkbox" onchange="updateTable()">
-                                 <span class="checkmark"></span>
-                                 <span>✅ Waive ISSS Implementation Cost</span>
-                             </label>
-                        </div>
-                    </div>
-                    <div class="control-group checkbox-group">
-                        <div style="min-width: 280px;">
-                             <label class="custom-checkbox-container">
-                                 <input type="checkbox" id="dedicated-it-checkbox" onchange="updateTable()">
-                                 <span class="checkmark"></span>
-                                 <span>👨‍💻 Dedicated IT FTE for Sunapsis:</span>
-                             </label>
-                        </div>
-                        <input type="number" id="dedicated-it-cost" value="72000" placeholder="72000" oninput="updateTable()" disabled>
-                    </div>
-                    <div class="control-group">
-                        <label for="windows-license">🖥️ Windows Server License:</label>
-                        <input type="text" id="windows-license" value="$1,150" readonly>
-                    </div>
-                    <div class="control-group">
-                        <label for="coldfusion-license">⚙️ ColdFusion Server License:</label>
-                        <input type="text" id="coldfusion-license" value="$2,930" readonly>
-                    </div>
-                    <div class="control-group">
-                        <label for="sql-license">🗄️ SQL Server Enterprise License:</label>
-                        <input type="text" id="sql-license" value="$28,000" readonly>
-                    </div>
-                    <div class="control-group">
-                        <label for="ssl-license">🔒 SSL Certificates:</label>
-                        <input type="text" id="ssl-license" value="$500" readonly>
-                    </div>
+                <div class="step-item" data-step="2">
+                    <div class="step-number">2</div>
+                    <div class="step-label">Compare Solutions</div>
                 </div>
-                
-                <div class="control-section">
-                    <h4>🔧 Sunapsis Implementation & Support Costs</h4>
-                    <div class="control-group">
-                        <label for="support-services">🎯 Support Services:</label>
-                        <input type="text" id="support-services" value="$7,500" readonly>
-                    </div>
-                    <div class="control-group">
-                        <label for="integration">🔗 Integration Services:</label>
-                        <input type="text" id="integration" value="$8,400" readonly>
-                    </div>
-                    <div class="control-group">
-                        <label for="migration">📁 Legacy Data Migration:</label>
-                        <input type="text" id="migration" value="$2,800" readonly>
-                    </div>
-                    <div class="control-group">
-                        <label for="admin">⚙️ System Administration (25% FTE):</label>
-                        <input type="text" id="admin" value="$18,200" readonly>
-                    </div>
+                <div class="step-item" data-step="3">
+                    <div class="step-number">3</div>
+                    <div class="step-label">View Savings</div>
                 </div>
-                
-                <div class="control-section">
-                    <h4>🖥️ Sunapsis Hardware Infrastructure</h4>
-                    <div class="control-group">
-                        <label for="app-server-prod">🚀 Application Server - Production:</label>
-                        <input type="text" id="app-server-prod" value="$2,000" readonly>
-                    </div>
-                    <div class="control-group">
-                        <label for="app-server-test">🧪 Application Server - Test:</label>
-                        <input type="text" id="app-server-test" value="$2,000" readonly>
-                    </div>
-                    <div class="control-group">
-                        <label for="db-server">🗄️ Database Server:</label>
-                        <input type="text" id="db-server" value="$2,000" readonly>
-                    </div>
-                    <div class="control-group">
-                        <label for="file-storage">💾 File Storage:</label>
-                        <input type="text" id="file-storage" value="$1,250" readonly>
-                    </div>
+                <div class="step-item" data-step="4">
+                    <div class="step-number">4</div>
+                    <div class="step-label">Generate Report</div>
                 </div>
             </div>
 
-            <div class="loading-spinner" id="loading"></div>
-
-            <div class="table-container fade-in">
-                <table id="cost-table">
-                    <thead>
-                        <tr>
-                            <th style="width: 35%;">💼 Cost Category</th>
-                            <th style="width: 20%;">🌟 Terra Dotta Hosted</th>
-                            <th style="width: 20%;">🏢 Sunapsis On-Premise</th>
-                            <th style="width: 25%;">📚 Sources & Notes</th>
-                        </tr>
-                    </thead>
-                    <tbody id="table-body">
-                        <!-- Table content will be generated by JavaScript -->
-                    </tbody>
-                </table>
-            </div>
-
-            <div id="summary-section" class="fade-in">
-                <h2 class="summary-title">Cost Category Summary</h2>
-                <div class="table-container">
-                    <table id="summary-table">
-                         <thead>
-                            <tr>
-                                <th style="width: 45%;">Cost Category</th>
-                                <th style="width: 27.5%;">🌟 Terra Dotta Hosted</th>
-                                <th style="width: 27.5%;">🏢 Sunapsis On-Premise</th>
-                            </tr>
-                        </thead>
-                        <tbody id="summary-table-body">
-                           <!-- Summary rows generated by JS -->
-                        </tbody>
-                        <tfoot id="summary-table-footer">
-                           <!-- Total row generated by JS -->
-                        </tfoot>
-                    </table>
+            <!-- Step 1: Current Costs -->
+            <div class="step-content active" id="step-1">
+                <div class="guidance-box">
+                    <div class="guidance-title">
+                        <span>👋</span> Step 1: Let's Start with Your Current Situation
+                    </div>
+                    <div class="guidance-text">
+                        We'll help you understand the true cost difference between Terra Dotta's all-inclusive hosted solution 
+                        and Sunapsis's on-premise deployment. This typically takes just 2-3 minutes to complete.
+                    </div>
+                    <div class="guidance-tip">
+                        💡 <strong>Pro Tip:</strong> Have your current Sunapsis invoice handy, or use the quick-fill options below for typical pricing scenarios.
+                    </div>
                 </div>
-            </div>
-            
-            <div class="summary-grid">
-                <div class="summary-box fade-in">
-                    <h3>📊 Year 1 Cost Analysis</h3>
-                    <div class="summary-stats">
-                        <div class="stat-box">
-                            <div class="stat-value" id="hosted-total">$0</div>
-                            <div class="stat-label">Terra Dotta</div>
+
+                <div class="input-section">
+                    <div class="input-card highlight">
+                        <div class="input-card-header">
+                            <div class="input-card-icon">📊</div>
+                            <div class="input-card-title">
+                                <h3>What are you currently paying for Sunapsis?</h3>
+                                <div class="input-card-subtitle">Enter your annual license cost or select from common tiers</div>
+                            </div>
                         </div>
-                        <div class="stat-box">
-                            <div class="stat-value" id="sunapsis-total">$0</div>
-                            <div class="stat-label">Sunapsis</div>
+
+                        <div class="input-group">
+                            <label class="input-label">Sunapsis Annual License Fee</label>
+                            <div class="input-wrapper">
+                                <span class="input-prefix">$</span>
+                                <input type="number" class="input-field with-prefix" id="sunapsis-current" 
+                                       placeholder="e.g., 45000" oninput="validateStep1()">
+                            </div>
+                            <div class="input-help">This is your base ISSS software license fee (not including implementation or hidden costs)</div>
+                            
+                            <div class="quick-fill">
+                                <button class="quick-fill-btn" onclick="fillSunapsis(35000)">Small Institution ($35K)</button>
+                                <button class="quick-fill-btn" onclick="fillSunapsis(45000)">Mid-Size ($45K)</button>
+                                <button class="quick-fill-btn" onclick="fillSunapsis(65000)">Large University ($65K)</button>
+                                <button class="quick-fill-btn" onclick="fillSunapsis(85000)">Major Research ($85K)</button>
+                            </div>
                         </div>
-                        <div class="stat-box">
-                            <div class="stat-value" id="savings-amount">$0</div>
-                            <div class="stat-label" id="savings-label">Difference</div>
+
+                        <div class="info-alert">
+                            <div class="info-alert-title">Don't know your exact cost?</div>
+                            <div class="info-alert-text">
+                                Check the <a href="https://sunapsis.iu.edu/pricing/index.html" target="_blank" style="color: var(--primary);">Sunapsis pricing page</a> 
+                                or use one of our quick-fill options based on institution size.
+                            </div>
+                        </div>
+
+                        <div class="toggle-group">
+                            <label class="toggle-switch">
+                                <input type="checkbox" id="new-customer" onchange="toggleNewCustomer()">
+                                <span class="toggle-slider"></span>
+                            </label>
+                            <div class="toggle-content">
+                                <div class="toggle-label">I'm evaluating both solutions (not a current Sunapsis user)</div>
+                                <div class="toggle-description">We'll show you the full comparison including implementation costs</div>
+                            </div>
                         </div>
                     </div>
-                    <div class="summary-percentage neutral" id="savings-percentage">Enter costs to see comparison</div>
                 </div>
-                
-                <div class="summary-box fade-in">
-                    <h3>📈 5-Year Total Cost of Ownership</h3>
-                    <div class="summary-stats">
-                        <div class="stat-box">
-                            <div class="stat-value" id="hosted-5year">$0</div>
-                            <div class="stat-label">Terra Dotta 5-Year</div>
+
+                <div class="action-buttons">
+                    <button class="btn btn-secondary" disabled>
+                        <span>←</span> Previous
+                    </button>
+                    <button class="btn btn-primary" onclick="nextStep()" id="step1-next" disabled>
+                        Next Step <span>→</span>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Step 2: Compare Solutions -->
+            <div class="step-content" id="step-2">
+                <div class="guidance-box">
+                    <div class="guidance-title">
+                        <span>🎯</span> Step 2: Configure Your Comparison
+                    </div>
+                    <div class="guidance-text">
+                        Now let's add Terra Dotta's pricing and any special configurations. Terra Dotta's hosted solution 
+                        includes all infrastructure, licensing, and support costs that are hidden extras with Sunapsis.
+                    </div>
+                    <div class="guidance-tip">
+                        💡 <strong>Sales Tip:</strong> The checkboxes below reveal common hidden costs that Sunapsis customers often overlook.
+                    </div>
+                </div>
+
+                <div class="input-section">
+                    <div class="input-card">
+                        <div class="input-card-header">
+                            <div class="input-card-icon">🚀</div>
+                            <div class="input-card-title">
+                                <h3>Terra Dotta All-Inclusive Pricing</h3>
+                                <div class="input-card-subtitle">One simple price includes everything</div>
+                            </div>
                         </div>
-                        <div class="stat-box">
-                            <div class="stat-value" id="sunapsis-5year">$0</div>
-                            <div class="stat-label">Sunapsis 5-Year</div>
+
+                        <div class="input-group">
+                            <label class="input-label">Terra Dotta Annual License (All-Inclusive)</label>
+                            <div class="input-wrapper">
+                                <span class="input-prefix">$</span>
+                                <input type="number" class="input-field with-prefix" id="td-software" 
+                                       placeholder="Enter Terra Dotta quote" oninput="updateCalculations()">
+                            </div>
+                            <div class="input-help">This includes hosting, all server licenses, SSL, support, and maintenance</div>
                         </div>
-                        <div class="stat-box">
-                            <div class="stat-value" id="savings-5year">$0</div>
-                            <div class="stat-label" id="savings-5year-label">5-Year Difference</div>
+
+                        <div class="input-group">
+                            <label class="input-label">One-Time Implementation (if applicable)</label>
+                            <div class="input-wrapper">
+                                <span class="input-prefix">$</span>
+                                <input type="number" class="input-field with-prefix" id="td-implementation" 
+                                       placeholder="Usually waived or reduced" oninput="updateCalculations()">
+                            </div>
+                            <div class="input-help">Often waived for competitive switches from Sunapsis</div>
                         </div>
                     </div>
-                    <div class="summary-percentage neutral" id="savings-5year-percentage">Enter values to see 5-year analysis</div>
+
+                    <div class="input-card">
+                        <div class="input-card-header">
+                            <div class="input-card-icon">💡</div>
+                            <div class="input-card-title">
+                                <h3>Reveal Sunapsis Hidden Costs</h3>
+                                <div class="input-card-subtitle">These are often overlooked but very real expenses</div>
+                            </div>
+                        </div>
+
+                        <div class="toggle-group">
+                            <label class="toggle-switch">
+                                <input type="checkbox" id="show-implementation" onchange="updateCalculations()" checked>
+                                <span class="toggle-slider"></span>
+                            </label>
+                            <div class="toggle-content">
+                                <div class="toggle-label">Include Sunapsis Implementation Cost ($8,100)</div>
+                                <div class="toggle-description">One-time setup fee that Sunapsis charges</div>
+                            </div>
+                        </div>
+
+                        <div class="toggle-group">
+                            <label class="toggle-switch">
+                                <input type="checkbox" id="dedicated-it" onchange="toggleDedicatedIT()">
+                                <span class="toggle-slider"></span>
+                            </label>
+                            <div class="toggle-content">
+                                <div class="toggle-label">Requires Dedicated IT Staff</div>
+                                <div class="toggle-description">Many institutions need a dedicated IT person for Sunapsis maintenance</div>
+                            </div>
+                        </div>
+
+                        <div class="input-group" id="it-cost-group" style="display: none;">
+                            <label class="input-label">Annual IT Staff Cost</label>
+                            <div class="input-wrapper">
+                                <span class="input-prefix">$</span>
+                                <input type="number" class="input-field with-prefix" id="it-cost" 
+                                       value="72000" oninput="updateCalculations()">
+                            </div>
+                            <div class="input-help">Average salary for dedicated IT support staff</div>
+                        </div>
+
+                        <div class="info-alert">
+                            <div class="info-alert-title">Hidden Costs Automatically Included:</div>
+                            <div class="info-alert-text">
+                                • Windows Server License ($1,150/yr) • ColdFusion License ($2,930/yr)<br>
+                                • SQL Server Enterprise ($28,000/yr) • SSL Certificates ($500/yr)<br>
+                                • Integration Services ($8,400) • Data Migration ($2,800)<br>
+                                • Server Hardware ($7,250) • System Administration (25% FTE: $18,200/yr)
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="action-buttons">
+                    <button class="btn btn-secondary" onclick="previousStep()">
+                        <span>←</span> Previous
+                    </button>
+                    <button class="btn btn-primary" onclick="nextStep()">
+                        Calculate Savings <span>→</span>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Step 3: View Results -->
+            <div class="step-content" id="step-3">
+                <div class="guidance-box">
+                    <div class="guidance-title">
+                        <span>🎉</span> Step 3: Your Savings Analysis
+                    </div>
+                    <div class="guidance-text">
+                        Here's your complete cost comparison. The results often surprise people when they see all the hidden costs!
+                    </div>
+                </div>
+
+                <div class="loading" id="loading">
+                    <div class="spinner"></div>
+                    <p style="margin-top: 1rem; color: var(--neutral);">Calculating your savings...</p>
+                </div>
+
+                <div id="results-content">
+                    <!-- Summary Cards -->
+                    <div class="summary-grid">
+                        <div class="summary-card success">
+                            <div class="summary-card-title">Your Annual Savings</div>
+                            <div class="summary-card-value" id="annual-savings">$0</div>
+                            <div class="summary-card-subtitle" id="savings-percent">Calculating...</div>
+                            <div class="summary-badge">RECOMMENDED</div>
+                        </div>
+
+                        <div class="summary-card">
+                            <div class="summary-card-title">5-Year Total Savings</div>
+                            <div class="summary-card-value" id="five-year-savings">$0</div>
+                            <div class="summary-card-subtitle">Total cost of ownership benefit</div>
+                        </div>
+
+                        <div class="summary-card">
+                            <div class="summary-card-title">ROI Timeline</div>
+                            <div class="summary-card-value" id="roi-months">Immediate</div>
+                            <div class="summary-card-subtitle">Time to positive ROI</div>
+                        </div>
+                    </div>
+
+                    <!-- Detailed Breakdown -->
+                    <div class="table-container">
+                        <div class="table-header">
+                            <span>📊 Complete Cost Breakdown</span>
+                            <span style="font-size: 0.875rem; font-weight: 400;">All hidden costs revealed</span>
+                        </div>
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th style="width: 45%">Cost Category</th>
+                                    <th style="width: 25%">Terra Dotta</th>
+                                    <th style="width: 30%">Sunapsis (True Cost)</th>
+                                </tr>
+                            </thead>
+                            <tbody id="breakdown-tbody">
+                                <!-- Generated by JavaScript -->
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <!-- 5-Year Projection -->
+                    <div class="table-container">
+                        <div class="table-header">
+                            <span>📈 5-Year Cost Projection</span>
+                        </div>
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Year</th>
+                                    <th>Terra Dotta</th>
+                                    <th>Sunapsis</th>
+                                    <th>Cumulative Savings</th>
+                                </tr>
+                            </thead>
+                            <tbody id="projection-tbody">
+                                <!-- Generated by JavaScript -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <div class="action-buttons">
+                    <button class="btn btn-secondary" onclick="previousStep()">
+                        <span>←</span> Adjust Numbers
+                    </button>
+                    <button class="btn btn-primary" onclick="nextStep()">
+                        Generate Report <span>→</span>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Step 4: Export -->
+            <div class="step-content" id="step-4">
+                <div class="guidance-box">
+                    <div class="guidance-title">
+                        <span>📤</span> Step 4: Share Your Results
+                    </div>
+                    <div class="guidance-text">
+                        Choose how you'd like to save or share this analysis. The PDF report is perfect for executive presentations,
+                        while the CSV is great for further analysis in Excel.
+                    </div>
+                    <div class="guidance-tip">
+                        💡 <strong>Sales Best Practice:</strong> Email the PDF to your prospect while you're still on the call - it reinforces the value immediately.
+                    </div>
+                </div>
+
+                <div class="export-options">
+                    <div class="export-card" onclick="generatePDF()">
+                        <div class="export-icon">📑</div>
+                        <div class="export-title">Professional PDF Report</div>
+                        <div class="export-description">Executive-ready presentation with charts and analysis</div>
+                    </div>
+
+                    <div class="export-card" onclick="generateCSV()">
+                        <div class="export-icon">📊</div>
+                        <div class="export-title">Excel/CSV Export</div>
+                        <div class="export-description">Raw data for further analysis and customization</div>
+                    </div>
+
+                    <div class="export-card" onclick="window.print()">
+                        <div class="export-icon">🖨️</div>
+                        <div class="export-title">Print Report</div>
+                        <div class="export-description">Optimized layout for physical handouts</div>
+                    </div>
+                </div>
+
+                <div class="info-alert">
+                    <div class="info-alert-title">Next Steps:</div>
+                    <div class="info-alert-text">
+                        1. Download the PDF report to share with stakeholders<br>
+                        2. Schedule a follow-up demo to show Terra Dotta's features<br>
+                        3. Discuss migration timeline and implementation support<br>
+                        4. Request references from similar institutions who switched
+                    </div>
+                </div>
+
+                <div class="action-buttons">
+                    <button class="btn btn-secondary" onclick="previousStep()">
+                        <span>←</span> Back to Results
+                    </button>
+                    <button class="btn btn-primary" onclick="startOver()">
+                        Start New Comparison <span>🔄</span>
+                    </button>
                 </div>
             </div>
         </div>
     </div>
 
-    <button class="floating-action" onclick="window.print()" title="Print Report">🖨️</button>
-
     <script>
-        function getValue(id) {
-            const element = document.getElementById(id);
-            if (!element) return 0;
-            let value = element.value || '0';
-            value = value.toString().replace(/[$,]/g, '');
-            return parseFloat(value) || 0;
+        // State Management
+        let currentStep = 1;
+        const state = {
+            sunapisCurrent: 0,
+            tdSoftware: 0,
+            tdImplementation: 0,
+            isNewCustomer: false,
+            showImplementation: true,
+            dedicatedIT: false,
+            itCost: 72000,
+            // Hidden costs (always included in calculations)
+            serverLicenses: {
+                windows: 1150,
+                coldfusion: 2930,
+                sql: 28000,
+                ssl: 500
+            },
+            hiddenCosts: {
+                integration: 8400,
+                migration: 2800,
+                admin: 18200,
+                implementation: 8100
+            },
+            infrastructure: {
+                appProd: 2000,
+                appTest: 2000,
+                db: 2000,
+                storage: 1250
+            }
+        };
+
+        // Navigation
+        function nextStep() {
+            if (currentStep < 4) {
+                // Mark current step as completed
+                document.querySelector(`.step-item[data-step="${currentStep}"]`).classList.add('completed');
+                document.querySelector(`.step-item[data-step="${currentStep}"]`).classList.remove('active');
+                
+                currentStep++;
+                
+                // Activate next step
+                document.querySelector(`.step-item[data-step="${currentStep}"]`).classList.add('active');
+                
+                // Hide current content
+                document.querySelectorAll('.step-content').forEach(content => {
+                    content.classList.remove('active');
+                });
+                
+                // Show next content
+                document.getElementById(`step-${currentStep}`).classList.add('active');
+                
+                // Update progress bar
+                document.getElementById('progress').style.width = `${(currentStep / 4) * 100}%`;
+                
+                // If moving to step 3, calculate results
+                if (currentStep === 3) {
+                    calculateResults();
+                }
+            }
         }
 
-        function formatCurrency(amount) {
-            return '$' + amount.toLocaleString('en-US', { minimumFractionDigits: 0, maximumFractionDigits: 0 });
+        function previousStep() {
+            if (currentStep > 1) {
+                document.querySelector(`.step-item[data-step="${currentStep}"]`).classList.remove('active');
+                
+                currentStep--;
+                
+                document.querySelector(`.step-item[data-step="${currentStep}"]`).classList.remove('completed');
+                document.querySelector(`.step-item[data-step="${currentStep}"]`).classList.add('active');
+                
+                document.querySelectorAll('.step-content').forEach(content => {
+                    content.classList.remove('active');
+                });
+                
+                document.getElementById(`step-${currentStep}`).classList.add('active');
+                
+                document.getElementById('progress').style.width = `${(currentStep / 4) * 100}%`;
+            }
         }
 
-        function showLoading() {
-            document.getElementById('loading').style.display = 'block';
+        function startOver() {
+            currentStep = 1;
+            
+            // Reset steps
+            document.querySelectorAll('.step-item').forEach((step, index) => {
+                step.classList.remove('completed', 'active');
+                if (index === 0) step.classList.add('active');
+            });
+            
+            // Reset content
+            document.querySelectorAll('.step-content').forEach((content, index) => {
+                content.classList.remove('active');
+                if (index === 0) content.classList.add('active');
+            });
+            
+            // Reset progress
+            document.getElementById('progress').style.width = '25%';
+            
+            // Clear inputs
+            document.getElementById('sunapsis-current').value = '';
+            document.getElementById('td-software').value = '';
+            document.getElementById('td-implementation').value = '';
+            document.getElementById('new-customer').checked = false;
+            document.getElementById('show-implementation').checked = true;
+            document.getElementById('dedicated-it').checked = false;
+            
+            validateStep1();
         }
 
-        function hideLoading() {
-            document.getElementById('loading').style.display = 'none';
+        // Step navigation
+        document.querySelectorAll('.step-item').forEach(item => {
+            item.addEventListener('click', function() {
+                const targetStep = parseInt(this.dataset.step);
+                if (targetStep < currentStep || this.classList.contains('completed')) {
+                    currentStep = targetStep;
+                    
+                    document.querySelectorAll('.step-item').forEach(s => s.classList.remove('active'));
+                    this.classList.add('active');
+                    
+                    document.querySelectorAll('.step-content').forEach(content => {
+                        content.classList.remove('active');
+                    });
+                    
+                    document.getElementById(`step-${targetStep}`).classList.add('active');
+                    document.getElementById('progress').style.width = `${(targetStep / 4) * 100}%`;
+                }
+            });
+        });
+
+        // Validation
+        function validateStep1() {
+            const value = parseFloat(document.getElementById('sunapsis-current').value) || 0;
+            const nextBtn = document.getElementById('step1-next');
+            
+            if (value > 0) {
+                nextBtn.disabled = false;
+                state.sunapisCurrent = value;
+            } else {
+                nextBtn.disabled = true;
+            }
         }
 
-        function updateTable() {
-            showLoading();
+        // Quick fills
+        function fillSunapsis(amount) {
+            document.getElementById('sunapsis-current').value = amount;
+            validateStep1();
+        }
+
+        // Toggle handlers
+        function toggleNewCustomer() {
+            state.isNewCustomer = document.getElementById('new-customer').checked;
+        }
+
+        function toggleDedicatedIT() {
+            const isChecked = document.getElementById('dedicated-it').checked;
+            document.getElementById('it-cost-group').style.display = isChecked ? 'block' : 'none';
+            state.dedicatedIT = isChecked;
+            updateCalculations();
+        }
+
+        // Calculations
+        function updateCalculations() {
+            state.tdSoftware = parseFloat(document.getElementById('td-software').value) || 0;
+            state.tdImplementation = parseFloat(document.getElementById('td-implementation').value) || 0;
+            state.showImplementation = document.getElementById('show-implementation').checked;
+            state.itCost = parseFloat(document.getElementById('it-cost').value) || 72000;
+        }
+
+        function calculateResults() {
+            // Show loading
+            document.getElementById('loading').classList.add('active');
+            document.getElementById('results-content').style.display = 'none';
             
             setTimeout(() => {
-                // Handle checkbox logic
-                const isImplementationWaived = document.getElementById('waive-implementation-checkbox').checked;
-                const isDedicatedIT = document.getElementById('dedicated-it-checkbox').checked;
-
-                const dedicatedITCostInput = document.getElementById('dedicated-it-cost');
-                const isssImplementationInput = document.getElementById('isss-implementation');
-
-                dedicatedITCostInput.disabled = !isDedicatedIT;
-                isssImplementationInput.disabled = isImplementationWaived;
-
-                // Get all input values
-                const tdSoftware = getValue('td-software');
-                const tdImplementation = getValue('td-implementation');
-                const isssLicense = getValue('isss-license');
-                const dedicatedITCost = isDedicatedIT ? getValue('dedicated-it-cost') : 0;
-                const isssImplementationCost = isImplementationWaived ? 0 : getValue('isss-implementation');
-
-
-                const sunapsisCosts = {
-                    windows: getValue('windows-license'),
-                    coldfusion: getValue('coldfusion-license'),
-                    sql: getValue('sql-license'),
-                    ssl: getValue('ssl-license'),
-                    support: getValue('support-services'),
-                    integration: getValue('integration'),
-                    migration: getValue('migration'),
-                    admin: getValue('admin'),
-                    appProd: getValue('app-server-prod'),
-                    appTest: getValue('app-server-test'),
-                    db: getValue('db-server'),
-                    storage: getValue('file-storage')
-                };
-
-                // Calculate sub-totals for summary table
-                const tdSoftwareAndImpTotal = tdSoftware + tdImplementation;
-                const sunSoftwareAndImpTotal = isssLicense + isssImplementationCost;
-
-                const sunLicensingTotal = sunapsisCosts.windows + sunapsisCosts.coldfusion + sunapsisCosts.sql + sunapsisCosts.ssl;
-                const sunHiddenImpTotal = sunapsisCosts.integration + sunapsisCosts.migration + (isDedicatedIT ? 0 : sunapsisCosts.admin);
-                const sunInfraTotal = sunapsisCosts.appProd + sunapsisCosts.appTest + sunapsisCosts.db + sunapsisCosts.storage;
-
-                // Main table calculations
-                const tdYear1Total = tdSoftwareAndImpTotal;
-                const sunYear1Total = sunSoftwareAndImpTotal + sunLicensingTotal + sunHiddenImpTotal + sunInfraTotal + dedicatedITCost;
+                // Get current values
+                updateCalculations();
                 
-                // Ongoing Annual Costs
-                const tdAnnualCost = tdSoftware;
-                const sunAnnualCost = isssLicense + sunLicensingTotal + (isDedicatedIT ? 0 : sunapsisCosts.admin) + dedicatedITCost;
-
-
-                // Populate main table
-                document.getElementById('table-body').innerHTML = `
-                    <tr class="category-header"><td colspan="4"><strong>💼 Year 1 Software and Implementation Cost</strong></td></tr>
-                    <tr><td>🎓 International Students & Scholars License</td><td class="price">${formatCurrency(tdSoftware)}</td><td class="price">${formatCurrency(isssLicense)}</td><td class="sources-column">Institutional licensing for SEVIS management software varies by vendor.<br><a href="https://sunapsis.iu.edu/pricing.html" target="_blank" class="link-style">📋 Sunapsis Pricing</a></td></tr>
-                    <tr><td>⚙️ ISSS Implementation Cost</td><td class="price">${formatCurrency(tdImplementation)}</td><td class="price">${formatCurrency(isssImplementationCost)}</td><td class="sources-column">Implementation costs for ISSS system setup and configuration.<br><a href="https://sunapsis.iu.edu/implementation.html" target="_blank" class="link-style">🔧 Sunapsis Implementation Guide</a></td></tr>
-                    <tr class="total-row"><td><strong>💰 Total Software & Implementation</strong></td><td class="price"><strong>${formatCurrency(tdSoftwareAndImpTotal)}</strong></td><td class="price"><strong>${formatCurrency(sunSoftwareAndImpTotal)}</strong></td><td></td></tr>
-                    
-                    <tr class="category-header"><td colspan="4"><strong>🖥️ Server Software Licensing</strong></td></tr>
-                    <tr><td>🖥️ Windows Server License</td><td class="price">✅ Included</td><td class="price">${formatCurrency(sunapsisCosts.windows)}</td><td class="sources-column">Microsoft Windows Server 2025 Standard 16-core.<br><a href="https://www.microsoft.com/en-us/windows-server/pricing" target="_blank" class="link-style">💻 Microsoft Pricing</a></td></tr>
-                    <tr><td>⚙️ ColdFusion Server License</td><td class="price">✅ Included</td><td class="price">${formatCurrency(sunapsisCosts.coldfusion)}</td><td class="sources-column">Adobe ColdFusion 2025 Enterprise.<br><a href="https://www.adobe.com/products/coldfusion/pricing.html" target="_blank" class="link-style">🎨 Adobe Pricing</a></td></tr>
-                    <tr><td>🗄️ SQL Server Enterprise License</td><td class="price">✅ Included</td><td class="price">${formatCurrency(sunapsisCosts.sql)}</td><td class="sources-column">SQL Server Enterprise: ~$7,000/core, 4-core min.<br><a href="https://www.microsoft.com/en-us/sql-server/sql-server-2022-pricing" target="_blank" class="link-style">💾 SQL Server Pricing</a></td></tr>
-                    <tr><td>🔒 SSL Certificates</td><td class="price">✅ Included</td><td class="price">${formatCurrency(sunapsisCosts.ssl)}</td><td class="sources-column">DigiCert SSL certificates.<br><a href="https://www.digicert.com/tls-ssl/compare-certificates" target="_blank" class="link-style">🔐 DigiCert Pricing</a></td></tr>
-                    <tr class="total-row"><td><strong>💻 Total Software Licensing</strong></td><td class="price"><strong>✨ Included</strong></td><td class="price"><strong>${formatCurrency(sunLicensingTotal)}</strong></td><td></td></tr>
-
-                    <tr class="category-header"><td colspan="4"><strong>🔧 Hidden Implementation Fees</strong></td></tr>
-                    <tr><td>🔗 Integration Services</td><td class="price">✅ Included</td><td class="price">${formatCurrency(sunapsisCosts.integration)}</td><td class="sources-column">Complexity varies with existing systems.<br><a href="https://sunapsis.iu.edu/services/integration.html" target="_blank" class="link-style">🔧 Integration Info</a></td></tr>
-                    <tr><td>📁 Legacy Data Migration</td><td class="price">✅ Included</td><td class="price">${formatCurrency(sunapsisCosts.migration)}</td><td class="sources-column">Depends on data volume and complexity.<br><a href="https://sunapsis.iu.edu/services/migration.html" target="_blank" class="link-style">📦 Migration Info</a></td></tr>
-                    <tr><td>⚙️ System Administration (25% FTE)</td><td class="price">✅ Included</td><td class="price">${isDedicatedIT ? '👨‍💻 FTE Below' : formatCurrency(sunapsisCosts.admin)}</td><td class="sources-column">25% FTE for on-premise deployments.<br><a href="https://www.bls.gov/ooh/computer-and-information-technology/network-and-computer-systems-administrators.htm" target="_blank" class="link-style">📊 BLS Data</a></td></tr>
-                    <tr class="total-row"><td><strong>🚫 Total Hidden Implementation</strong></td><td class="price"><strong>✨ Included</strong></td><td class="price"><strong>${formatCurrency(sunHiddenImpTotal)}</strong></td><td></td></tr>
-
-                    <tr class="category-header"><td colspan="4"><strong>🏗️ Server Infrastructure</strong></td></tr>
-                    <tr><td>🚀 Application Server - Production</td><td class="price">✅ Included</td><td class="price">${formatCurrency(sunapsisCosts.appProd)}</td><td class="sources-column">Varies by specs and vendor.<br><a href="https://www.dell.com/en-us/work/shop/servers/sr/servers" target="_blank" class="link-style">🖥️ Dell Pricing</a></td></tr>
-                    <tr><td>🧪 Application Server - Test</td><td class="price">✅ Included</td><td class="price">${formatCurrency(sunapsisCosts.appTest)}</td><td class="sources-column">Matches production specs.<br><a href="https://www.hpe.com/us/en/servers/proliant-dl-servers.html" target="_blank" class="link-style">⚡ HPE Options</a></td></tr>
-                    <tr><td>🗄️ Database Server</td><td class="price">✅ Included</td><td class="price">${formatCurrency(sunapsisCosts.db)}</td><td class="sources-column">Depends on data volume.<br><a href="https://aws.amazon.com/rds/sqlserver/pricing/" target="_blank" class="link-style">☁️ AWS RDS Pricing</a></td></tr>
-                    <tr><td>💾 File Storage</td><td class="price">✅ Included</td><td class="price">${formatCurrency(sunapsisCosts.storage)}</td><td class="sources-column">Depends on capacity needs.<br><a href="https://www.netapp.com/data-storage/fas/" target="_blank" class="link-style">📦 NetApp Solutions</a></td></tr>
-                    <tr class="total-row"><td><strong>🏗️ Total Infrastructure</strong></td><td class="price"><strong>✨ Included</strong></td><td class="price"><strong>${formatCurrency(sunInfraTotal)}</strong></td><td></td></tr>
-                    ${isDedicatedIT ? `<tr class="category-header"><td colspan="4"><strong>👨‍💻 Additional IT Costs</strong></td></tr>
-                    <tr><td>👨‍💻 Dedicated IT FTE for Sunapsis</td><td class="price">✅ Included</td><td class="price">${formatCurrency(dedicatedITCost)}</td><td>Full-time dedicated IT staff.</td></tr>` : ''}
-                    <tr class="grand-total"><td ><strong>💸 Total Year 1 Cost</strong></td><td class="price"><strong>${formatCurrency(tdYear1Total)}</strong></td><td class="price"><strong>${formatCurrency(sunYear1Total)}</strong></td><td></td></tr>
-                `;
-
-                // Populate Summary Table
-                let summaryFteRow = '';
-                if (isDedicatedIT) {
-                    summaryFteRow = `<tr id="summary-fte-row"><td>Annual Cost: Dedicated IT FTE for Sunapsis</td><td class="price">✅ Included</td><td class="price">${formatCurrency(dedicatedITCost)}</td></tr>`;
-                }
+                // Use Sunapsis current as the license fee
+                const sunapisLicense = state.sunapisCurrent;
                 
-                document.getElementById('summary-table-body').innerHTML = `
-                    <tr id="summary-row-1"><td>Total Year 1 Software and Implementation Cost</td><td class="price">${formatCurrency(tdSoftwareAndImpTotal)}</td><td class="price">${formatCurrency(sunSoftwareAndImpTotal)}</td></tr>
-                    <tr id="summary-row-2"><td>Total Ongoing Server Software Licensing Cost</td><td class="price">✅ Included</td><td class="price">${formatCurrency(sunLicensingTotal)}</td></tr>
-                    <tr id="summary-row-3"><td>Total Hidden Implementation Cost</td><td class="price">✅ Included</td><td class="price">${formatCurrency(sunHiddenImpTotal)}</td></tr>
-                    <tr id="summary-row-4"><td>Total Ongoing Server Infrastructure Cost</td><td class="price">✅ Included</td><td class="price">${formatCurrency(sunInfraTotal)}</td></tr>
-                    ${summaryFteRow}
-                `;
+                // Calculate Terra Dotta total
+                const tdYear1 = state.tdSoftware + state.tdImplementation;
+                const tdAnnual = state.tdSoftware;
                 
-                // Populate Summary Table Footer
-                document.getElementById('summary-table-footer').innerHTML = `
-                    <tr class="total-row" style="font-weight: bold;">
-                        <td>Ongoing Annual Cost</td>
-                        <td class="price">${formatCurrency(tdAnnualCost)}</td>
-                        <td class="price">${formatCurrency(sunAnnualCost)}</td>
-                    </tr>
-                    <tr class="grand-total">
-                        <td><strong>💸 Total Year 1 Cost</strong></td>
-                        <td class="price"><strong>${formatCurrency(tdYear1Total)}</strong></td>
-                        <td class="price"><strong>${formatCurrency(sunYear1Total)}</strong></td>
-                    </tr>
-                `;
-
-
+                // Calculate all Sunapsis costs
+                const serverLicenseTotal = Object.values(state.serverLicenses).reduce((a, b) => a + b, 0);
+                const infrastructureTotal = Object.values(state.infrastructure).reduce((a, b) => a + b, 0);
+                const implementationCost = state.showImplementation ? state.hiddenCosts.implementation : 0;
+                const adminCost = state.dedicatedIT ? 0 : state.hiddenCosts.admin;
+                const itStaffCost = state.dedicatedIT ? state.itCost : 0;
+                
+                const sunapisYear1 = sunapisLicense + 
+                                     serverLicenseTotal + 
+                                     implementationCost +
+                                     state.hiddenCosts.integration +
+                                     state.hiddenCosts.migration +
+                                     infrastructureTotal +
+                                     adminCost +
+                                     itStaffCost;
+                
+                const sunapisAnnual = sunapisLicense + serverLicenseTotal + adminCost + itStaffCost;
+                
+                // Calculate savings
+                const annualSavings = sunapisAnnual - tdAnnual;
+                const year1Savings = sunapisYear1 - tdYear1;
+                const fiveYearTD = state.tdImplementation + (tdAnnual * 5);
+                const fiveYearSunapsis = implementationCost + 
+                                        state.hiddenCosts.integration + 
+                                        state.hiddenCosts.migration +
+                                        infrastructureTotal +
+                                        (sunapisAnnual * 5);
+                const fiveYearSavings = fiveYearSunapsis - fiveYearTD;
+                
                 // Update summary cards
-                const difference = sunYear1Total - tdYear1Total;
-                const savingsPercentage = sunYear1Total > 0 ? ((difference / sunYear1Total) * 100) : 0;
+                document.getElementById('annual-savings').textContent = formatCurrency(Math.max(0, annualSavings));
+                document.getElementById('savings-percent').textContent = annualSavings > 0 
+                    ? `${((annualSavings / sunapisAnnual) * 100).toFixed(1)}% less with Terra Dotta`
+                    : 'Review configuration';
+                    
+                document.getElementById('five-year-savings').textContent = formatCurrency(Math.max(0, fiveYearSavings));
+                document.getElementById('roi-months').textContent = year1Savings > 0 ? 'Immediate' : 'Year 2';
                 
-                document.getElementById('hosted-total').textContent = formatCurrency(tdYear1Total);
-                document.getElementById('sunapsis-total').textContent = formatCurrency(sunYear1Total);
-                document.getElementById('savings-amount').textContent = formatCurrency(Math.abs(difference));
+                // Update breakdown table
+                updateBreakdownTable(tdYear1, sunapisYear1, sunapisLicense);
                 
-                const savingsPercentageEl = document.getElementById('savings-percentage');
-                if (tdYear1Total === 0 && sunYear1Total === 0) {
-                    savingsPercentageEl.textContent = 'Enter costs to see comparison';
-                    savingsPercentageEl.className = 'summary-percentage neutral';
-                } else if (difference > 0) {
-                    document.getElementById('savings-label').textContent = 'Savings with Terra Dotta';
-                    savingsPercentageEl.textContent = `🎉 ${savingsPercentage.toFixed(1)}% savings with Terra Dotta`;
-                    savingsPercentageEl.className = 'summary-percentage savings';
-                } else {
-                    document.getElementById('savings-label').textContent = 'Additional Cost';
-                    savingsPercentageEl.textContent = `🔺 ${Math.abs(savingsPercentage).toFixed(1)}% more expensive`;
-                    savingsPercentageEl.className = 'summary-percentage cost';
-                }
-
-                // 5-year calculations
-                const td5Year = tdImplementation + (tdSoftware * 5);
-                const sun5Year = isssImplementationCost + sunapsisCosts.integration + sunapsisCosts.migration + sunInfraTotal + (sunAnnualCost * 5);
+                // Update projection table
+                updateProjectionTable(tdAnnual, sunapisAnnual, state.tdImplementation, 
+                                    implementationCost + state.hiddenCosts.integration + 
+                                    state.hiddenCosts.migration + infrastructureTotal);
                 
-                const difference5Year = sun5Year - td5Year;
-                const savingsPercentage5Year = sun5Year > 0 ? ((difference5Year / sun5Year) * 100) : 0;
-                
-                document.getElementById('hosted-5year').textContent = formatCurrency(td5Year);
-                document.getElementById('sunapsis-5year').textContent = formatCurrency(sun5Year);
-                document.getElementById('savings-5year').textContent = formatCurrency(Math.abs(difference5Year));
-                
-                const savings5YearPercentageEl = document.getElementById('savings-5year-percentage');
-                if (td5Year === 0 && sun5Year === 0) {
-                    savings5YearPercentageEl.textContent = 'Enter values for 5-year analysis';
-                    savings5YearPercentageEl.className = 'summary-percentage neutral';
-                } else if (difference5Year > 0) {
-                    document.getElementById('savings-5year-label').textContent = '5-Year Savings with Terra Dotta';
-                    savings5YearPercentageEl.textContent = `🚀 ${savingsPercentage5Year.toFixed(1)}% savings over 5 years`;
-                    savings5YearPercentageEl.className = 'summary-percentage savings';
-                } else {
-                    document.getElementById('savings-5year-label').textContent = '5-Year Additional Cost';
-                    savings5YearPercentageEl.textContent = `📈 ${Math.abs(savingsPercentage5Year).toFixed(1)}% more expensive over 5 years`;
-                    savings5YearPercentageEl.className = 'summary-percentage cost';
-                }
-
-                hideLoading();
-            }, 300);
+                // Hide loading, show results
+                document.getElementById('loading').classList.remove('active');
+                document.getElementById('results-content').style.display = 'block';
+            }, 1000);
         }
 
-        function loadCurrentMarket() {
-            // This function resets fields to their default read-only state
-            const fields = [
-                ['windows-license', '$1,150'], ['coldfusion-license', '$2,930'], ['sql-license', '$28,000'],
-                ['ssl-license', '$500'], ['support-services', '$7,500'], ['integration', '$8,400'],
-                ['migration', '$2,800'], ['admin', '$18,200'], ['app-server-prod', '$2,000'],
-                ['app-server-test', '$2,000'], ['db-server', '$2,000'], ['file-storage', '$1,250']
-            ];
+        function updateBreakdownTable(tdTotal, sunTotal, sunLicense) {
+            const tbody = document.getElementById('breakdown-tbody');
+            const serverTotal = Object.values(state.serverLicenses).reduce((a, b) => a + b, 0);
+            const infraTotal = Object.values(state.infrastructure).reduce((a, b) => a + b, 0);
             
-            fields.forEach(([fieldId, value]) => {
-                const el = document.getElementById(fieldId);
-                if (el) {
-                    el.type = 'text';
-                    el.value = value;
-                    el.readOnly = true;
-                    el.oninput = null;
-                }
-            });
-            document.getElementById('isss-implementation').value = "8100";
-            document.getElementById('waive-implementation-checkbox').checked = false;
-            document.getElementById('dedicated-it-checkbox').checked = false;
-            updateTable();
-        }
-
-        function loadInstitutionalIT() {
-             // This function makes fields editable for custom institutional values
-            const fields = [
-                ['isss-implementation', 8100],
-                ['windows-license', 1150], ['coldfusion-license', 2930], ['sql-license', 28000],
-                ['ssl-license', 500], ['support-services', 7500], ['integration', 8400],
-                ['migration', 2800], ['admin', 18200], ['app-server-prod', 2000],
-                ['app-server-test', 2000], ['db-server', 2000], ['file-storage', 1250]
-            ];
+            let html = `
+                <tr class="category-row">
+                    <td colspan="3"><strong>Software Licensing</strong></td>
+                </tr>
+                <tr>
+                    <td>Annual Software License</td>
+                    <td class="value-cell">${formatCurrency(state.tdSoftware)}</td>
+                    <td class="value-cell">${formatCurrency(sunLicense)}</td>
+                </tr>
+                <tr>
+                    <td>Implementation (One-time)</td>
+                    <td class="value-cell">${formatCurrency(state.tdImplementation)}</td>
+                    <td class="value-cell">${formatCurrency(state.showImplementation ? state.hiddenCosts.implementation : 0)}</td>
+                </tr>
+                
+                <tr class="category-row">
+                    <td colspan="3"><strong>Server & Infrastructure Costs (Hidden)</strong></td>
+                </tr>
+                <tr>
+                    <td>Windows Server License</td>
+                    <td class="value-cell"><span class="included-badge">✓ Included</span></td>
+                    <td class="value-cell">${formatCurrency(state.serverLicenses.windows)}</td>
+                </tr>
+                <tr>
+                    <td>ColdFusion Server License</td>
+                    <td class="value-cell"><span class="included-badge">✓ Included</span></td>
+                    <td class="value-cell">${formatCurrency(state.serverLicenses.coldfusion)}</td>
+                </tr>
+                <tr>
+                    <td>SQL Server Enterprise</td>
+                    <td class="value-cell"><span class="included-badge">✓ Included</span></td>
+                    <td class="value-cell">${formatCurrency(state.serverLicenses.sql)}</td>
+                </tr>
+                <tr>
+                    <td>SSL Certificates</td>
+                    <td class="value-cell"><span class="included-badge">✓ Included</span></td>
+                    <td class="value-cell">${formatCurrency(state.serverLicenses.ssl)}</td>
+                </tr>
+                <tr>
+                    <td>Server Hardware (3 servers + storage)</td>
+                    <td class="value-cell"><span class="included-badge">✓ Included</span></td>
+                    <td class="value-cell">${formatCurrency(infraTotal)}</td>
+                </tr>
+                
+                <tr class="category-row">
+                    <td colspan="3"><strong>Professional Services & Support</strong></td>
+                </tr>
+                <tr>
+                    <td>Integration Services</td>
+                    <td class="value-cell"><span class="included-badge">✓ Included</span></td>
+                    <td class="value-cell">${formatCurrency(state.hiddenCosts.integration)}</td>
+                </tr>
+                <tr>
+                    <td>Data Migration</td>
+                    <td class="value-cell"><span class="included-badge">✓ Included</span></td>
+                    <td class="value-cell">${formatCurrency(state.hiddenCosts.migration)}</td>
+                </tr>`;
             
-            fields.forEach(([fieldId, value]) => {
-                const el = document.getElementById(fieldId);
-                if (el) {
-                    el.type = 'number';
-                    el.value = value;
-                    el.readOnly = false;
-                    el.oninput = updateTable;
-                }
-            });
-            document.getElementById('waive-implementation-checkbox').checked = false;
-            document.getElementById('dedicated-it-checkbox').checked = false;
-            updateTable();
+            if (state.dedicatedIT) {
+                html += `
+                <tr>
+                    <td>Dedicated IT Staff (Annual)</td>
+                    <td class="value-cell"><span class="included-badge">✓ Included</span></td>
+                    <td class="value-cell">${formatCurrency(state.itCost)}</td>
+                </tr>`;
+            } else {
+                html += `
+                <tr>
+                    <td>System Administration (25% FTE)</td>
+                    <td class="value-cell"><span class="included-badge">✓ Included</span></td>
+                    <td class="value-cell">${formatCurrency(state.hiddenCosts.admin)}</td>
+                </tr>`;
+            }
+            
+            html += `
+                <tr class="grand-total-row">
+                    <td><strong>TOTAL YEAR 1 COST</strong></td>
+                    <td class="value-cell"><strong>${formatCurrency(tdTotal)}</strong></td>
+                    <td class="value-cell"><strong>${formatCurrency(sunTotal)}</strong></td>
+                </tr>`;
+            
+            tbody.innerHTML = html;
         }
 
-        document.addEventListener('DOMContentLoaded', () => {
-            updateTable();
+        function updateProjectionTable(tdAnnual, sunAnnual, tdImpl, sunImpl) {
+            const tbody = document.getElementById('projection-tbody');
+            let html = '';
+            let tdCumulative = 0;
+            let sunCumulative = 0;
+            
+            for (let year = 1; year <= 5; year++) {
+                const tdCost = (year === 1 ? tdImpl : 0) + tdAnnual;
+                const sunCost = (year === 1 ? sunImpl : 0) + sunAnnual;
+                
+                tdCumulative += tdCost;
+                sunCumulative += sunCost;
+                
+                const savings = sunCumulative - tdCumulative;
+                
+                html += `
+                    <tr ${year === 5 ? 'class="total-row"' : ''}>
+                        <td>Year ${year}</td>
+                        <td class="value-cell">${formatCurrency(tdCost)}</td>
+                        <td class="value-cell">${formatCurrency(sunCost)}</td>
+                        <td class="value-cell" style="color: ${savings > 0 ? 'var(--success)' : 'var(--danger)'}; font-weight: 700;">
+                            ${formatCurrency(Math.abs(savings))}
+                        </td>
+                    </tr>`;
+            }
+            
+            tbody.innerHTML = html;
+        }
+
+        // Export functions
+        function generatePDF() {
+            const { jsPDF } = window.jspdf;
+            const doc = new jsPDF();
+            
+            // Get calculated values
+            updateCalculations();
+            const sunapisLicense = state.sunapisCurrent;
+            const tdTotal = state.tdSoftware + state.tdImplementation;
+            const serverTotal = Object.values(state.serverLicenses).reduce((a, b) => a + b, 0);
+            const infraTotal = Object.values(state.infrastructure).reduce((a, b) => a + b, 0);
+            const adminCost = state.dedicatedIT ? state.itCost : state.hiddenCosts.admin;
+            const sunTotal = sunapisLicense + serverTotal + 
+                           (state.showImplementation ? state.hiddenCosts.implementation : 0) +
+                           state.hiddenCosts.integration + state.hiddenCosts.migration +
+                           infraTotal + adminCost;
+            
+            // Header
+            doc.setFillColor(14, 165, 233);
+            doc.rect(0, 0, 210, 40, 'F');
+            
+            doc.setTextColor(255, 255, 255);
+            doc.setFontSize(24);
+            doc.setFont(undefined, 'bold');
+            doc.text('ROI Analysis Report', 105, 20, { align: 'center' });
+            
+            doc.setFontSize(12);
+            doc.setFont(undefined, 'normal');
+            doc.text('Terra Dotta vs. Sunapsis Cost Comparison', 105, 30, { align: 'center' });
+            
+            // Reset text color
+            doc.setTextColor(0, 0, 0);
+            
+            // Executive Summary
+            doc.setFontSize(16);
+            doc.setFont(undefined, 'bold');
+            doc.text('Executive Summary', 20, 55);
+            
+            doc.setFontSize(11);
+            doc.setFont(undefined, 'normal');
+            
+            const savings = sunTotal - tdTotal;
+            const savingsPercent = ((savings / sunTotal) * 100).toFixed(1);
+            
+            if (savings > 0) {
+                doc.setTextColor(16, 185, 129);
+                doc.text(`Annual Savings: ${formatCurrency(savings)} (${savingsPercent}% reduction)`, 20, 65);
+                doc.setTextColor(0, 0, 0);
+                doc.text('Recommendation: Switch to Terra Dotta for immediate cost savings', 20, 72);
+            } else {
+                doc.text(`Cost Difference: ${formatCurrency(Math.abs(savings))}`, 20, 65);
+            }
+            
+            // Cost Comparison Table
+            doc.autoTable({
+                startY: 85,
+                head: [['Cost Category', 'Terra Dotta', 'Sunapsis', 'Difference']],
+                body: [
+                    ['Software License', formatCurrency(state.tdSoftware), formatCurrency(sunapisLicense), 
+                     formatCurrency(sunapisLicense - state.tdSoftware)],
+                    ['Implementation', formatCurrency(state.tdImplementation), 
+                     formatCurrency(state.showImplementation ? state.hiddenCosts.implementation : 0),
+                     formatCurrency((state.showImplementation ? state.hiddenCosts.implementation : 0) - state.tdImplementation)],
+                    ['Server Licenses', 'Included', formatCurrency(serverTotal), formatCurrency(serverTotal)],
+                    ['Infrastructure', 'Included', formatCurrency(infraTotal), formatCurrency(infraTotal)],
+                    ['Professional Services', 'Included', 
+                     formatCurrency(state.hiddenCosts.integration + state.hiddenCosts.migration),
+                     formatCurrency(state.hiddenCosts.integration + state.hiddenCosts.migration)],
+                    ['IT Support', 'Included', formatCurrency(adminCost), formatCurrency(adminCost)]
+                ],
+                foot: [['TOTAL YEAR 1', formatCurrency(tdTotal), formatCurrency(sunTotal), 
+                       formatCurrency(sunTotal - tdTotal)]],
+                theme: 'grid',
+                headStyles: { fillColor: [14, 165, 233] },
+                footStyles: { fillColor: [14, 165, 233], textColor: [255, 255, 255], fontStyle: 'bold' }
+            });
+            
+            // 5-Year Analysis
+            const currentY = doc.lastAutoTable.finalY + 10;
+            doc.setFontSize(14);
+            doc.setFont(undefined, 'bold');
+            doc.text('5-Year Total Cost of Ownership', 20, currentY);
+            
+            const td5Year = state.tdImplementation + (state.tdSoftware * 5);
+            const sun5Year = (state.showImplementation ? state.hiddenCosts.implementation : 0) +
+                           state.hiddenCosts.integration + state.hiddenCosts.migration +
+                           infraTotal + ((sunapisLicense + serverTotal + adminCost) * 5);
+            
+            doc.setFontSize(11);
+            doc.setFont(undefined, 'normal');
+            doc.text(`Terra Dotta 5-Year TCO: ${formatCurrency(td5Year)}`, 20, currentY + 10);
+            doc.text(`Sunapsis 5-Year TCO: ${formatCurrency(sun5Year)}`, 20, currentY + 17);
+            
+            doc.setTextColor(16, 185, 129);
+            doc.setFont(undefined, 'bold');
+            doc.text(`5-Year Savings: ${formatCurrency(sun5Year - td5Year)}`, 20, currentY + 24);
+            
+            // Footer
+            doc.setTextColor(100, 100, 100);
+            doc.setFontSize(9);
+            doc.setFont(undefined, 'normal');
+            doc.text(`Generated: ${new Date().toLocaleDateString()}`, 20, 280);
+            doc.text('Terra Dotta - All-Inclusive ISSS Solutions', 105, 280, { align: 'center' });
+            
+            // Save
+            doc.save(`ROI-Analysis-${new Date().toISOString().split('T')[0]}.pdf`);
+        }
+
+        function generateCSV() {
+            const headers = ['Category', 'Item', 'Terra Dotta', 'Sunapsis', 'Difference'];
+            const rows = [];
+            
+            // Add all cost categories
+            rows.push(['Software', 'Annual License', state.tdSoftware, state.sunapisCurrent, 
+                      state.sunapisCurrent - state.tdSoftware]);
+            rows.push(['Software', 'Implementation', state.tdImplementation, 
+                      state.showImplementation ? state.hiddenCosts.implementation : 0,
+                      (state.showImplementation ? state.hiddenCosts.implementation : 0) - state.tdImplementation]);
+            
+            // Server licenses
+            Object.entries(state.serverLicenses).forEach(([key, value]) => {
+                rows.push(['Server Licenses', key, 0, value, value]);
+            });
+            
+            // Infrastructure
+            Object.entries(state.infrastructure).forEach(([key, value]) => {
+                rows.push(['Infrastructure', key, 0, value, value]);
+            });
+            
+            // Support
+            rows.push(['Support', 'Integration', 0, state.hiddenCosts.integration, state.hiddenCosts.integration]);
+            rows.push(['Support', 'Migration', 0, state.hiddenCosts.migration, state.hiddenCosts.migration]);
+            rows.push(['Support', state.dedicatedIT ? 'Dedicated IT' : 'Admin (25% FTE)', 0, 
+                      state.dedicatedIT ? state.itCost : state.hiddenCosts.admin,
+                      state.dedicatedIT ? state.itCost : state.hiddenCosts.admin]);
+            
+            // Create CSV
+            let csv = headers.join(',') + '\n';
+            rows.forEach(row => {
+                csv += row.join(',') + '\n';
+            });
+            
+            // Download
+            const blob = new Blob([csv], { type: 'text/csv' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `cost-comparison-${new Date().toISOString().split('T')[0]}.csv`;
+            a.click();
+            URL.revokeObjectURL(url);
+        }
+
+        // Utility functions
+        function formatCurrency(amount) {
+            return new Intl.NumberFormat('en-US', {
+                style: 'currency',
+                currency: 'USD',
+                minimumFractionDigits: 0,
+                maximumFractionDigits: 0
+            }).format(amount);
+        }
+
+        // Initialize
+        document.addEventListener('DOMContentLoaded', function() {
+            validateStep1();
         });
     </script>
 </body>
